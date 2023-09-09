@@ -10,6 +10,7 @@ import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
+import sShareVoices
 import sVoiceListLabel
 import sVoicesNotFoundDescription
 import sVoicesNotFoundTitle
@@ -32,6 +33,10 @@ class NotFoundVoicesDetail : Chain(OnTextViaBot("voicesNotFound")) {
                         InlineButton(
                             Strings().string(sVoiceListLabel, updating),
                             mInlineMode = InlineModeQuery.CurrentChat()
+                        ),
+                        InlineButton(
+                            Strings().string(sShareVoices, updating),
+                            mInlineMode = InlineModeQuery.OtherChat()
                         )
                     ).convertToVertical()
                 )

@@ -7,6 +7,7 @@ import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
+import sShareVoices
 import sStartMessage
 import sVoiceListLabel
 import translations.domain.ContextString
@@ -29,6 +30,10 @@ interface MessageMenu {
                         InlineButton(
                             ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
                             mInlineMode = InlineModeQuery.CurrentChat()
+                        ),
+                        InlineButton(
+                            ContextString.Base.Strings().string(sShareVoices, mUpdating),
+                            mInlineMode = InlineModeQuery.OtherChat()
                         )
                     ).convertToVertical()
                 )

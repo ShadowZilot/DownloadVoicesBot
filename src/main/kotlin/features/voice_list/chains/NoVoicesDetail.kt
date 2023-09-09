@@ -12,6 +12,7 @@ import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
 import sEmptyVoicesDescription
 import sEmptyVoicesTitle
+import sShareVoices
 import sVoiceListLabel
 import translations.domain.ContextString.Base.Strings
 
@@ -32,6 +33,10 @@ class NoVoicesDetail : Chain(OnTextViaBot("noVoices")) {
                         InlineButton(
                             Strings().string(sVoiceListLabel, updating),
                             mInlineMode = InlineModeQuery.CurrentChat()
+                        ),
+                        InlineButton(
+                            Strings().string(sShareVoices, updating),
+                            mInlineMode = InlineModeQuery.OtherChat()
                         )
                     ).convertToVertical()
                 )

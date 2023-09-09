@@ -12,6 +12,7 @@ import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
 import sEmptyTitle
+import sShareVoices
 import sVoiceListLabel
 import sVoiceSaved
 import translations.domain.ContextString.Base.Strings
@@ -49,6 +50,10 @@ class VoiceToMessage(
                     InlineButton(
                         Strings().string(sVoiceListLabel, mUpdating),
                         mInlineMode = InlineModeQuery.CurrentChat()
+                    ),
+                    InlineButton(
+                        Strings().string(sShareVoices, mUpdating),
+                        mInlineMode = InlineModeQuery.OtherChat()
                     )
                 ).convertToVertical()
             ),
