@@ -9,6 +9,7 @@ import executables.Executable
 import executables.SendMessage
 import handlers.OnTextViaBot
 import helpers.FileDownloadException
+import helpers.FileUrl
 import logs.Logging
 import org.json.JSONObject
 import sBot
@@ -49,7 +50,31 @@ class GoToVoice : Chain(OnTextViaBot()) {
                             sendAudioAction
                         )
                     } catch (e: FileDownloadException) {
-                        Logging.ConsoleLog.log("Failed to download file")
+                        Logging.ConsoleLog.log("Try update download link")
+                        VoiceStorage.Base.Instance().updateDownloadLink(
+                            voiceId.toLong(),
+                            FileUrl.Base(
+                                mKey, VoiceStorage.Base.Instance().voiceFileId(voiceId.toLong())
+                            ).fileUrl()
+                        )
+                        val deleteWaitMessageAction = DeleteMessage(
+                            mKey,
+                            updating.map(UserIdUpdating()).toString(), it.toLong()
+                        )
+                        val sendAudioAction = VoiceStorage.Base.Instance().voiceById(voiceId.toLong()).map(
+                            VoiceToMessage(
+                                mKey,
+                                updating, false
+                            )
+                        )
+                        sBot.implementRequest(
+                            deleteWaitMessageAction.map(JSONObject()),
+                            deleteWaitMessageAction
+                        )
+                        sBot.implementRequest(
+                            sendAudioAction.map(JSONObject()),
+                            sendAudioAction
+                        )
                     }
                 }
             )

@@ -12,7 +12,11 @@ interface VoiceStorage : StorageShell {
 
     fun updateVoiceDeletion(id: Long, isDeleted: Boolean)
 
+    fun updateDownloadLink(id: Long, voiceLink: String)
+
     fun voiceById(id: Long): Voice
+
+    fun voiceFileId(id: Long): String
 
     fun voicesList(userId: Long, offset: Int, search: String) : List<Voice>
 
@@ -39,6 +43,12 @@ interface VoiceStorage : StorageShell {
             )
         }
 
+        override fun updateDownloadLink(id: Long, voiceLink: String) {
+            mDatabase.executeQueryWithoutResult(
+                "UPDATE $mTableName SET `voice_link` = '$voiceLink' WHERE `id` = $id"
+            )
+        }
+
         override fun voiceById(id: Long): Voice {
             var voice: Voice? = null
             mDatabase.executeQuery(
@@ -51,6 +61,20 @@ interface VoiceStorage : StorageShell {
                 }
             }
             return voice ?: throw VoiceNotFound(id)
+        }
+
+        override fun voiceFileId(id: Long): String {
+            var voiceFileId: String? = null
+            mDatabase.executeQuery(
+                "SELECT file_id FROM $mTableName WHERE `id` = $id AND `is_deleted` = 0"
+            ) { item, _ ->
+                voiceFileId = try {
+                    item.getString("file_id")
+                } catch (e: SQLException) {
+                    null
+                }
+            }
+            return voiceFileId ?: throw VoiceNotFound(id)
         }
 
         override fun voicesList(userId: Long, offset: Int, search: String): List<Voice> {
