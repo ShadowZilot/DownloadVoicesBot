@@ -2,6 +2,7 @@ import core.Bot
 import core.BotProvider
 import core.storage.Storages
 import data.VoiceStorage
+import features.ads.AdsFeature
 import features.download_voice.DownloadVoiceFeature
 import features.greeting.GreetingFunction
 import features.voice_list.VoiceListFeature
@@ -19,6 +20,7 @@ fun main(args: Array<String>) {
     sBot = provider.createdBot(
         VoiceListFeature(),
         GreetingFunction(),
-        DownloadVoiceFeature()
+        DownloadVoiceFeature(),
+        AdsFeature()
     )
 }
