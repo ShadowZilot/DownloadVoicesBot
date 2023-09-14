@@ -13,13 +13,14 @@ interface AdsMessage {
 
     class Base(
         private val mKey: String,
-        private val mVoiceId: Int
+        private val mVoiceId: Int,
+        private val mAnimationId: String
     ) : AdsMessage {
 
         override fun message(): Executable {
             return SendAnimation(
                 mKey,
-                "CgACAgIAAxkBAAIYmGUCoe6gjPIMbjaSMS5yuYbWGsQAAwIwAAIcXRFIFZPJL6p63t8wBA",
+                mAnimationId,
                 buildString {
                     appendLine("*Телеграм уже давно перестал быть просто мессенджером\\.*")
                     appendLine()

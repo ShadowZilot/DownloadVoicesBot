@@ -29,7 +29,10 @@ class CatchVoice : Chain(OnVoiceGotten()) {
             updating,
             mStates,
             listOf(
-                AdsMessage.Base(mKey, lastVoiceId.toInt()).message()
+                AdsMessage.Base(
+                    mKey, lastVoiceId.toInt(),
+                    Storages.Main.Provider().stConfig.configValueString("adsAnimation")
+                ).message()
             ),
             listOf(
                 SendMessage(
