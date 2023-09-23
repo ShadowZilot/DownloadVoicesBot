@@ -18,7 +18,13 @@ interface VoiceStorage : StorageShell {
 
     fun voiceFileId(id: Long): String
 
+    fun secretVoiceById(id: Long): Voice
+
+    fun secretVoiceFileId(id: Long): String
+
     fun voicesList(userId: Long, offset: Int, search: String) : List<Voice>
+
+    fun secretVoiceList(offset: Int, search: String) : List<Voice>
 
     fun lastVoiceId(userId: Long): Long
 
@@ -77,12 +83,55 @@ interface VoiceStorage : StorageShell {
             return voiceFileId ?: throw VoiceNotFound(id)
         }
 
+        override fun secretVoiceById(id: Long): Voice {
+            var voice: Voice? = null
+            mDatabase.executeQuery(
+                "SELECT * FROM $mTableName WHERE `id` = $id"
+            ) { item, _ ->
+                voice = try {
+                    Voice(item)
+                } catch (e: SQLException) {
+                    null
+                }
+            }
+            return voice ?: throw VoiceNotFound(id)
+        }
+
+        override fun secretVoiceFileId(id: Long): String {
+            var voiceFileId: String? = null
+            mDatabase.executeQuery(
+                "SELECT file_id FROM $mTableName WHERE `id` = $id"
+            ) { item, _ ->
+                voiceFileId = try {
+                    item.getString("file_id")
+                } catch (e: SQLException) {
+                    null
+                }
+            }
+            return voiceFileId ?: throw VoiceNotFound(id)
+        }
+
         override fun voicesList(userId: Long, offset: Int, search: String): List<Voice> {
             val voices = mutableListOf<Voice>()
             val searchQuery = if (search.isNotEmpty()) "AND INSTR(`title`, '$search') > 0" else ""
             mDatabase.executeQuery(
                 "SELECT * FROM $mTableName WHERE `user_id` = $userId AND" +
                         " `is_deleted` = 0 $searchQuery ORDER BY `saved_time` DESC LIMIT 50 OFFSET $offset"
+            ) { item, isNext ->
+                var next = isNext
+                while (next) {
+                    voices.add(Voice(item))
+                    next = item.next()
+                }
+            }
+            return voices
+        }
+
+        override fun secretVoiceList(offset: Int, search: String): List<Voice> {
+            val voices = mutableListOf<Voice>()
+            val searchQuery = if (search.isNotEmpty()) "WHERE INSTR(`title`, '$search') > 0" else ""
+            mDatabase.executeQuery(
+                "SELECT * FROM $mTableName $searchQuery ORDER BY `saved_time` DESC LIMIT 50 OFFSET $offset"
             ) { item, isNext ->
                 var next = isNext
                 while (next) {

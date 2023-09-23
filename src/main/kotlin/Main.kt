@@ -5,6 +5,8 @@ import data.VoiceStorage
 import features.ads.AdsFeature
 import features.download_voice.DownloadVoiceFeature
 import features.greeting.GreetingFunction
+import features.moderator.ModeratorFeature
+import features.moderator.chains.ModeratorMenu
 import features.voice_list.VoiceListFeature
 import helpers.storage.jdbc_wrapping.DatabaseHelper
 
@@ -21,6 +23,7 @@ fun main(args: Array<String>) {
         VoiceListFeature(),
         GreetingFunction(),
         DownloadVoiceFeature(),
-        AdsFeature()
+        AdsFeature(),
+        ModeratorFeature()
     )
 }
