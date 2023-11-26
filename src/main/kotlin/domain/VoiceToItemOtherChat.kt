@@ -13,7 +13,8 @@ class VoiceToItemOtherChat(
 
     override fun map(
         id: Long,
-        fileId: String,
+        fileOgaId: String,
+        fileMp3Id: String,
         userId: Long,
         title: String,
         voiceLink: String,
@@ -23,7 +24,7 @@ class VoiceToItemOtherChat(
     ): InlineQueryResultCachedAudio {
         return InlineQueryResultCachedAudio(
             id.toInt(),
-            fileId,
+            fileOgaId,
             "\uD83C\uDFB6 ${title.ifEmpty { Strings().string(sEmptyTitle, mUpdating, id) }}",
             "[${Strings().string(sDownloadVoiceLink, mUpdating)}](https://t.me/$mBotName)"
         )

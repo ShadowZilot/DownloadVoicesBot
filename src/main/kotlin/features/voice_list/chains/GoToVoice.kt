@@ -38,8 +38,10 @@ class GoToVoice : Chain(OnTextViaBot()) {
                         val sendAudioAction = VoiceStorage.Base.Instance().voiceById(voiceId.toLong()).map(
                             VoiceToMessage(
                                 mKey,
-                                updating, false
-                            )
+                                updating, mIsJustSaved = false, mIsAudio = true
+                            ) { mp3Id ->
+                                VoiceStorage.Base.Instance().voiceMp3IdUpdate(voiceId.toLong(), mp3Id)
+                            }
                         )
                         sBot.implementRequest(
                             deleteWaitMessageAction.map(JSONObject()),
@@ -50,36 +52,44 @@ class GoToVoice : Chain(OnTextViaBot()) {
                             sendAudioAction
                         )
                     } catch (e: FileDownloadException) {
-                        Logging.ConsoleLog.log("Try update download link")
-                        VoiceStorage.Base.Instance().updateDownloadLink(
-                            voiceId.toLong(),
-                            FileUrl.Base(
-                                mKey, VoiceStorage.Base.Instance().voiceFileId(voiceId.toLong())
-                            ).fileUrl()
-                        )
-                        val deleteWaitMessageAction = DeleteMessage(
-                            mKey,
-                            updating.map(UserIdUpdating()).toString(), it.toLong()
-                        )
-                        val sendAudioAction = VoiceStorage.Base.Instance().voiceById(voiceId.toLong()).map(
-                            VoiceToMessage(
-                                mKey,
-                                updating, false
-                            )
-                        )
-                        sBot.implementRequest(
-                            deleteWaitMessageAction.map(JSONObject()),
-                            deleteWaitMessageAction
-                        )
-                        sBot.implementRequest(
-                            sendAudioAction.map(JSONObject()),
-                            sendAudioAction
-                        )
+                        tryUpdateDownloadLink(voiceId.toLong(), updating, it.toLong())
+                    } catch (e: IllegalArgumentException) {
+                        tryUpdateDownloadLink(voiceId.toLong(), updating, it.toLong())
                     }
                 }
             )
         } else {
             emptyList()
         }
+    }
+
+    private fun tryUpdateDownloadLink(voiceId: Long, updating: Updating, messageId: Long) {
+        Logging.ConsoleLog.log("Try update download link")
+        VoiceStorage.Base.Instance().updateDownloadLink(
+            voiceId,
+            FileUrl.Base(
+                mKey, VoiceStorage.Base.Instance().voiceFileId(voiceId)
+            ).fileUrl()
+        )
+        val deleteWaitMessageAction = DeleteMessage(
+            mKey,
+            updating.map(UserIdUpdating()).toString(), messageId
+        )
+        val sendAudioAction = VoiceStorage.Base.Instance().voiceById(voiceId).map(
+            VoiceToMessage(
+                mKey,
+                updating, mIsJustSaved = false, mIsAudio = true
+            ) { mp3Id ->
+                VoiceStorage.Base.Instance().voiceMp3IdUpdate(voiceId.toLong(), mp3Id)
+            }
+        )
+        sBot.implementRequest(
+            deleteWaitMessageAction.map(JSONObject()),
+            deleteWaitMessageAction
+        )
+        sBot.implementRequest(
+            sendAudioAction.map(JSONObject()),
+            sendAudioAction
+        )
     }
 }

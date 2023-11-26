@@ -15,7 +15,8 @@ class VoiceToSecListItem(
 
     override fun map(
         id: Long,
-        fileId: String,
+        fileOgaId: String,
+        fileMp3Id: String,
         userId: Long,
         title: String,
         voiceLink: String,

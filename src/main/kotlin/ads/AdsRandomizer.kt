@@ -22,20 +22,21 @@ interface AdsRandomizer {
     ) : AdsRandomizer {
 
         override fun executableList(): List<Executable> {
-            val lastAdTime = try { mStates.state(mUpdating).long("lastAdTime") } catch (e: NotFoundStateValue) { -1L }
-            return if (System.currentTimeMillis() - lastAdTime >= mAdTimeout) {
-                val randomNum = adsRandom.random(Random(System.currentTimeMillis()))
-                if (randomNum == 3) {
-                    mStates.state(mUpdating).editor(mStates).apply {
-                        putLong("lastAdTime", System.currentTimeMillis())
-                    }.commit()
-                    mAdsList
-                } else {
-                    mMainList
-                }
-            } else {
-                mMainList
-            }
+            return mMainList
+//            val lastAdTime = try { mStates.state(mUpdating).long("lastAdTime") } catch (e: NotFoundStateValue) { -1L }
+//            return if (System.currentTimeMillis() - lastAdTime >= mAdTimeout) {
+//                val randomNum = adsRandom.random(Random(System.currentTimeMillis()))
+//                if (randomNum == 3) {
+//                    mStates.state(mUpdating).editor(mStates).apply {
+//                        putLong("lastAdTime", System.currentTimeMillis())
+//                    }.commit()
+//                    mAdsList
+//                } else {
+//                    mMainList
+//                }
+//            } else {
+//                mMainList
+//            }
         }
     }
 }

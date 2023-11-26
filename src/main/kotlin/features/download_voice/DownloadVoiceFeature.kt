@@ -1,10 +1,12 @@
 package features.download_voice
 
 import core.BotChains
-import features.download_voice.chains.CancelSaving
-import features.download_voice.chains.CatchTitle
-import features.download_voice.chains.CatchVoice
-import features.download_voice.chains.SkipName
+import features.download_voice.mp3.CatchAudio
+import features.download_voice.mp3.LeaveAudioName
+import features.download_voice.oga.CancelSaving
+import features.download_voice.oga.CatchTitle
+import features.download_voice.oga.CatchVoice
+import features.download_voice.oga.SkipName
 
 class DownloadVoiceFeature : BotChains {
 
@@ -12,6 +14,8 @@ class DownloadVoiceFeature : BotChains {
         CatchVoice(),
         CatchTitle(),
         SkipName(),
-        CancelSaving()
+        CancelSaving(),
+        CatchAudio(),
+        LeaveAudioName()
     )
 }

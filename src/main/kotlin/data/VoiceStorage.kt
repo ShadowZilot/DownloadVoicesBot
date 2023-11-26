@@ -20,11 +20,17 @@ interface VoiceStorage : StorageShell {
 
     fun secretVoiceById(id: Long): Voice
 
+    fun voiceOgaUpdateFileIdAndLink(id: Long, fileId: String, downloadLink: String)
+
+    fun voiceMp3UpdateFileIdAndLink(id: Long, fileId: String, downloadLink: String)
+
+    fun voiceMp3IdUpdate(id: Long, fileId: String)
+
     fun secretVoiceFileId(id: Long): String
 
-    fun voicesList(userId: Long, offset: Int, search: String) : List<Voice>
+    fun voicesList(userId: Long, offset: Int, search: String): List<Voice>
 
-    fun secretVoiceList(offset: Int, search: String) : List<Voice>
+    fun secretVoiceList(offset: Int, search: String): List<Voice>
 
     fun lastVoiceId(userId: Long): Long
 
@@ -72,10 +78,10 @@ interface VoiceStorage : StorageShell {
         override fun voiceFileId(id: Long): String {
             var voiceFileId: String? = null
             mDatabase.executeQuery(
-                "SELECT file_id FROM $mTableName WHERE `id` = $id AND `is_deleted` = 0"
+                "SELECT file_oga_id FROM $mTableName WHERE `id` = $id AND `is_deleted` = 0"
             ) { item, _ ->
                 voiceFileId = try {
-                    item.getString("file_id")
+                    item.getString("file_oga_id")
                 } catch (e: SQLException) {
                     null
                 }
@@ -97,13 +103,31 @@ interface VoiceStorage : StorageShell {
             return voice ?: throw VoiceNotFound(id)
         }
 
+        override fun voiceOgaUpdateFileIdAndLink(id: Long, fileId: String, downloadLink: String) {
+            mDatabase.executeQueryWithoutResult(
+                "UPDATE $mTableName SET `file_oga_id` = '$fileId', `voice_link` = '$downloadLink' WHERE `id` = $id"
+            )
+        }
+
+        override fun voiceMp3UpdateFileIdAndLink(id: Long, fileId: String, downloadLink: String) {
+            mDatabase.executeQueryWithoutResult(
+                "UPDATE $mTableName SET `file_mp3_id` = '$fileId', `voice_link` = '$downloadLink' WHERE `id` = $id"
+            )
+        }
+
+        override fun voiceMp3IdUpdate(id: Long, fileId: String) {
+            mDatabase.executeQueryWithoutResult(
+                "UPDATE $mTableName SET `file_mp3_id` = '$fileId' WHERE `id` = $id"
+            )
+        }
+
         override fun secretVoiceFileId(id: Long): String {
             var voiceFileId: String? = null
             mDatabase.executeQuery(
-                "SELECT file_id FROM $mTableName WHERE `id` = $id"
+                "SELECT file_oga_id FROM $mTableName WHERE `id` = $id"
             ) { item, _ ->
                 voiceFileId = try {
-                    item.getString("file_id")
+                    item.getString("file_oga_id")
                 } catch (e: SQLException) {
                     null
                 }
@@ -161,7 +185,8 @@ interface VoiceStorage : StorageShell {
 
         override fun tableSchema() = "CREATE TABLE $mTableName(" +
                 "id bigint primary key auto_increment," +
-                "file_id varchar(256)," +
+                "file_oga_id varchar(256)," +
+                "file_mp3_id varchar(256)," +
                 "user_id bigint," +
                 "title varchar(128)," +
                 "voice_link varchar(256)," +
@@ -179,7 +204,7 @@ interface VoiceStorage : StorageShell {
                 }
             }
 
-            operator fun invoke() : VoiceStorage {
+            operator fun invoke(): VoiceStorage {
                 return mInstance ?: throw Exception()
             }
         }

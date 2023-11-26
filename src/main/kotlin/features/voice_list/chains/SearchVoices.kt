@@ -12,6 +12,7 @@ import executables.Executable
 import handlers.OnInlineQuerySenderChat
 import inline_query_result.InlineQueryResultArticle
 import inline_query_result.content.InputTextContent
+import logs.Logging
 import sDurationString
 import sEmptyVoicesDescription
 import sEmptyVoicesTitle
@@ -57,32 +58,32 @@ class SearchVoices : Chain(OnInlineQuerySenderChat()) {
                         searchQuery
                     )
                 }.map {
-                        it.map(mapper)
-                    }.ifEmpty {
-                        if (offset == 0) {
-                            listOf(
-                                if (searchQuery.isEmpty()) {
-                                    InlineQueryResultArticle(
-                                        0,
-                                        Strings().string(sEmptyVoicesTitle, updating),
-                                        InputTextContent("noVoices"),
-                                        "",
-                                        Strings().string(sEmptyVoicesDescription, updating)
-                                    )
-                                } else {
-                                    InlineQueryResultArticle(
-                                        0,
-                                        Strings().string(sVoicesNotFoundTitle, updating),
-                                        InputTextContent("voicesNotFound"),
-                                        "",
-                                        Strings().string(sVoicesNotFoundDescription, updating)
-                                    )
-                                }
-                            )
-                        } else {
-                            emptyList()
-                        }
-                    },
+                    it.map(mapper)
+                }.ifEmpty {
+                    if (offset == 0) {
+                        listOf(
+                            if (searchQuery.isEmpty()) {
+                                InlineQueryResultArticle(
+                                    0,
+                                    Strings().string(sEmptyVoicesTitle, updating),
+                                    InputTextContent("noVoices"),
+                                    "",
+                                    Strings().string(sEmptyVoicesDescription, updating)
+                                )
+                            } else {
+                                InlineQueryResultArticle(
+                                    0,
+                                    Strings().string(sVoicesNotFoundTitle, updating),
+                                    InputTextContent("voicesNotFound"),
+                                    "",
+                                    Strings().string(sVoicesNotFoundDescription, updating)
+                                )
+                            }
+                        )
+                    } else {
+                        emptyList()
+                    }
+                },
                 offset + 50,
                 0
             )

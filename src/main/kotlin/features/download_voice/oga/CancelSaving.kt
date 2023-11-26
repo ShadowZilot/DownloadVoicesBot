@@ -1,23 +1,24 @@
-package features.download_voice.chains
+package features.download_voice.oga
 
 import chain.Chain
 import core.Updating
 import data.VoiceNotFound
 import data.VoiceStorage
-import domain.VoiceToMessage
+import domain.MessageMenu
 import executables.AnswerToCallback
 import executables.DeleteMessage
+import executables.EditTextMessage
 import executables.Executable
 import handlers.OnCallbackDataGotten
 import sVoiceAlreadySaved
+import sVoiceSavingCanceled
 import translations.domain.ContextString
 import updating.UpdatingCallbackInt
 
-class SkipName : Chain(OnCallbackDataGotten("skipName")) {
-
+class CancelSaving : Chain(OnCallbackDataGotten("cancelSaving")) {
 
     override suspend fun executableChain(updating: Updating): List<Executable> {
-        val voiceId = updating.map(UpdatingCallbackInt("skipName"))
+        val voiceId = updating.map(UpdatingCallbackInt("cancelSaving"))
         return try {
             VoiceStorage.Base.Instance().voiceById(voiceId.toLong())
             listOf(
@@ -28,15 +29,18 @@ class SkipName : Chain(OnCallbackDataGotten("skipName")) {
                 )
             )
         } catch (e: VoiceNotFound) {
-            VoiceStorage.Base.Instance().updateVoiceDeletion(voiceId.toLong(), false)
             mStates.state(updating).editor(mStates).apply {
                 deleteValue("waitForTitle")
+                deleteValue("isAudio")
             }.commit()
             listOf(
+                AnswerToCallback(
+                    mKey,
+                    ContextString.Base.Strings().string(sVoiceSavingCanceled, updating),
+                    true
+                ),
                 DeleteMessage(mKey, updating),
-                VoiceStorage.Base.Instance().voiceById(voiceId.toLong()).map(
-                    VoiceToMessage(mKey, updating, true)
-                )
+                MessageMenu.Base(mKey, updating).message()
             )
         }
     }
