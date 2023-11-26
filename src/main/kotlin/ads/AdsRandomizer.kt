@@ -5,9 +5,10 @@ import executables.Executable
 import logs.Logging
 import staging.NotFoundStateValue
 import staging.StateHandling
+import updating.UpdatingLanguageCode
 import kotlin.random.Random
 
-private val adsRandom = 0..5
+private val adsRandom = 0..4
 
 interface AdsRandomizer {
 
@@ -22,21 +23,21 @@ interface AdsRandomizer {
     ) : AdsRandomizer {
 
         override fun executableList(): List<Executable> {
-            return mMainList
-//            val lastAdTime = try { mStates.state(mUpdating).long("lastAdTime") } catch (e: NotFoundStateValue) { -1L }
-//            return if (System.currentTimeMillis() - lastAdTime >= mAdTimeout) {
-//                val randomNum = adsRandom.random(Random(System.currentTimeMillis()))
-//                if (randomNum == 3) {
-//                    mStates.state(mUpdating).editor(mStates).apply {
-//                        putLong("lastAdTime", System.currentTimeMillis())
-//                    }.commit()
-//                    mAdsList
-//                } else {
-//                    mMainList
-//                }
-//            } else {
-//                mMainList
-//            }
+            val lastAdTime = try { mStates.state(mUpdating).long("lastAdTime") } catch (e: NotFoundStateValue) { -1L }
+            val languageCode = mUpdating.map(UpdatingLanguageCode())
+            return if (languageCode == "ru" && System.currentTimeMillis() - lastAdTime >= mAdTimeout) {
+                val randomNum = adsRandom.random(Random(System.currentTimeMillis()))
+                if (randomNum == 3) {
+                    mStates.state(mUpdating).editor(mStates).apply {
+                        putLong("lastAdTime", System.currentTimeMillis())
+                    }.commit()
+                    mAdsList
+                } else {
+                    mMainList
+                }
+            } else {
+                mMainList
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ import core.BotProvider
 import core.storage.Storages
 import data.VoiceStorage
 import features.ads.AdsFeature
+import features.donations.DonationFeature
 import features.download_voice.DownloadVoiceFeature
 import features.greeting.GreetingFunction
 import features.moderator.ModeratorFeature
@@ -12,9 +13,9 @@ import helpers.storage.jdbc_wrapping.DatabaseHelper
 
 lateinit var sBot: Bot
 var sBasePath = "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/"
-val sOgaGroup by lazy {
-    Storages.Main.Provider().stConfig.configValueLong("oga_group")
-}
+//val sOgaGroup by lazy {
+//    Storages.Main.Provider().stConfig.configValueLong("oga_group")
+//}
 
 fun main(args: Array<String>) {
     sBasePath = if (args.isEmpty()) "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/" else args[0]
@@ -28,6 +29,7 @@ fun main(args: Array<String>) {
         VoiceListFeature(),
         GreetingFunction(),
         DownloadVoiceFeature(),
+        DonationFeature(),
         AdsFeature(),
         ModeratorFeature()
     )

@@ -7,14 +7,16 @@ import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
+import sDonateLabel
 import sShareVoices
 import sStartMessage
 import sVoiceListLabel
 import translations.domain.ContextString
+import updating.UpdatingLanguageCode
 
 interface MessageMenu {
 
-    fun message() : Executable
+    fun message(): Executable
 
     class Base(
         private val mKey: String,
@@ -26,16 +28,33 @@ interface MessageMenu {
                 mKey,
                 ContextString.Base.Strings().string(sStartMessage, mUpdating),
                 InlineKeyboardMarkup(
-                    listOf(
-                        InlineButton(
-                            ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
-                            mInlineMode = InlineModeQuery.CurrentChat()
-                        ),
-                        InlineButton(
-                            ContextString.Base.Strings().string(sShareVoices, mUpdating),
-                            mInlineMode = InlineModeQuery.OtherChat()
-                        )
-                    ).convertToVertical()
+                    if (mUpdating.map(UpdatingLanguageCode()) == "ru") {
+                        listOf(
+                            InlineButton(
+                                ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
+                                mInlineMode = InlineModeQuery.CurrentChat()
+                            ),
+                            InlineButton(
+                                ContextString.Base.Strings().string(sShareVoices, mUpdating),
+                                mInlineMode = InlineModeQuery.OtherChat()
+                            ),
+                            InlineButton(
+                                ContextString.Base.Strings().string(sDonateLabel, mUpdating),
+                                "https://www.tinkoff.ru/rm/ponomarev.egor224/iy7cZ40310"
+                            )
+                        ).convertToVertical()
+                    } else {
+                        listOf(
+                            InlineButton(
+                                ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
+                                mInlineMode = InlineModeQuery.CurrentChat()
+                            ),
+                            InlineButton(
+                                ContextString.Base.Strings().string(sShareVoices, mUpdating),
+                                mInlineMode = InlineModeQuery.OtherChat()
+                            )
+                        ).convertToVertical()
+                    }
                 )
             )
         }

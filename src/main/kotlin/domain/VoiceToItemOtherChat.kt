@@ -26,7 +26,7 @@ class VoiceToItemOtherChat(
             id.toInt(),
             fileOgaId,
             "\uD83C\uDFB6 ${title.ifEmpty { Strings().string(sEmptyTitle, mUpdating, id) }}",
-            "[${Strings().string(sDownloadVoiceLink, mUpdating)}](https://t.me/$mBotName)"
+            "[${Strings().string(sDownloadVoiceLink, mUpdating)}](https://t.me/$mBotName?start=xj5mrl)"
         )
     }
 }

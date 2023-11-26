@@ -1,11 +1,18 @@
 package ads
 
+import broadcast.BroadcastHandling
+import core.Updating
 import executables.Executable
 import executables.SendAnimation
 import executables.SendMessage
 import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
+import sDonateLabel
+import sDonateMessage
+import sSkipTitleLabel
+import translations.domain.ContextString
+import translations.domain.ContextString.Base.Strings
 
 interface AdsMessage {
 
@@ -14,36 +21,21 @@ interface AdsMessage {
     class Base(
         private val mKey: String,
         private val mVoiceId: Int,
-        private val mAnimationId: String
+        private val mUpdating: Updating
     ) : AdsMessage {
 
         override fun message(): Executable {
-            return SendAnimation(
+            return SendMessage(
                 mKey,
-                mAnimationId,
-                buildString {
-                    appendLine("*Телеграм уже давно перестал быть просто мессенджером\\.*")
-                    appendLine()
-                    appendLine("Тут вам и новости, и развлечения, даже есть [каталог ботов](https://t.me/TgCloudStoreBot?start=gp0mou)\\!")
-                    appendLine()
-                    appendLine("*Здесь вы можете:*")
-                    appendLine("– Искать нужных ботов по категориям")
-                    appendLine("– Опубликовать своего бота")
-                    appendLine("– Повлиять на рейтинг ботов")
-                    appendLine()
-                    appendLine("А главное: всё бесплатно\\. Как для пользователей, так и для разработчиков\\.")
-                    appendLine()
-                    appendLine("Пока что, аналогов нет, попробуйте сами:")
-                    appendLine("*[@TgCloudStoreBot](https://t.me/TgCloudStoreBot?start=gp0mou)*")
-                },
+                Strings().string(sDonateMessage, mUpdating),
                 InlineKeyboardMarkup(
                     listOf(
                         InlineButton(
-                            "\uD83D\uDD0D Найти бота",
-                            "https://t.me/TgCloudStoreBot?start=gp0mou"
+                            Strings().string(sDonateLabel, mUpdating),
+                            "https://www.tinkoff.ru/rm/ponomarev.egor224/iy7cZ40310"
                         ),
                         InlineButton(
-                            "Пропустить",
+                            Strings().string(sSkipTitleLabel, mUpdating),
                             mCallbackData = "skipAd=$mVoiceId"
                         )
                     ).convertToVertical()

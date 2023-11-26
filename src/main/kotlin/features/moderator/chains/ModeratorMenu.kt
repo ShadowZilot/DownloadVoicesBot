@@ -26,7 +26,8 @@ class ModeratorMenu : Chain(CommandEvent("/secret")) {
                         InlineButton(
                             "Голосовые",
                             mInlineMode = InlineModeQuery.CurrentChat("sec")
-                        )
+                        ),
+                        InlineButton("Начать рассылку", mCallbackData = "initBroadcast")
                     ).convertToVertical()
                 )
             )
