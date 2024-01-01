@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
     )
     VoiceStorage.Base.Instance.create("voices", db)
     db.createTable(VoiceStorage.Base.Instance().tableSchema())
-    sBot = provider.createdBot(
+    sBot = provider.createBotPolling(
         VoiceListFeature(),
         GreetingFunction(),
         DownloadVoiceFeature(),

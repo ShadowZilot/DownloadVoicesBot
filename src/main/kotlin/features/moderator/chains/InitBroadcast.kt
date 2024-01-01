@@ -5,7 +5,6 @@ import chain.Chain
 import core.Updating
 import executables.EditTextMessage
 import executables.Executable
-import executables.SendMessage
 import handlers.OnCallbackGotten
 import helpers.convertToVertical
 import keyboard_markup.InlineButton
