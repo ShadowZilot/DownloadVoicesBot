@@ -3,6 +3,7 @@ package domain.converting
 import core.Updating
 import executables.Executable
 import keyboard_markup.KeyboardMarkup
+import logs.LogLevel
 import logs.Logging
 import okhttp3.Call
 import okhttp3.MultipartBody
@@ -27,13 +28,13 @@ class SendAudioCustom(
 ) : Executable {
 
     override fun onFailure(call: Call, e: IOException) {
-        Logging.ConsoleLog.log("Error while sending voice, message = ${e.message}")
+        Logging.ConsoleLog.logToFile("Error while sending voice, message = ${e.message}", LogLevel.Warning)
     }
 
     override fun onResponse(call: Call, response: Response) {
         val body = JSONObject(response.body?.string())
         if (!response.isSuccessful) {
-            Logging.ConsoleLog.log(body.toString(2))
+            Logging.ConsoleLog.logToFile(body.toString(2), LogLevel.Warning)
         } else {
             val resultBody = body.getJSONObject("result")
             val fileId = if (resultBody.has("audio")) {
@@ -43,7 +44,7 @@ class SendAudioCustom(
                 resultBody.getJSONObject("voice")
                     .getString("file_id")
             } else {
-                Logging.ConsoleLog.log("Unknown send voice result body!")
+                Logging.ConsoleLog.logToFile("Unknown send voice result body!", LogLevel.Warning)
                 ""
             }
             mOnFileId.invoke(fileId)

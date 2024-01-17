@@ -10,6 +10,7 @@ import executables.SendMessage
 import handlers.OnTextViaBot
 import helpers.FileDownloadException
 import helpers.FileUrl
+import logs.LogLevel
 import logs.Logging
 import org.json.JSONObject
 import sBot
@@ -64,7 +65,7 @@ class GoToVoice : Chain(OnTextViaBot()) {
     }
 
     private fun tryUpdateDownloadLink(voiceId: Long, updating: Updating, messageId: Long) {
-        Logging.ConsoleLog.log("Try update download link")
+        Logging.ConsoleLog.logToFile("Try update download link", LogLevel.Warning)
         VoiceStorage.Base.Instance().updateDownloadLink(
             voiceId,
             FileUrl.Base(

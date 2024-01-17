@@ -5,6 +5,7 @@ import core.storage.Storages
 import data.Voice
 import inline_query_result.InlineQueryResultArticle
 import inline_query_result.content.InputTextContent
+import logs.Logging
 import sEmptyTitle
 import translations.domain.ContextString
 

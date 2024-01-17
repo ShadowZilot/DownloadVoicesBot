@@ -1,5 +1,6 @@
 package domain.converting
 
+import logs.LogLevel
 import logs.Logging
 import okio.ByteString.Companion.toByteString
 import sBasePath
@@ -15,7 +16,7 @@ interface AudioConverter {
         private val mInputBytes: ByteArray
     ) : AudioConverter {
         override fun convertedBytes(): ByteArray {
-            Logging.ConsoleLog.log("Begin convert file id = $mId")
+            Logging.ConsoleLog.logToFile("Begin convert file id = $mId", LogLevel.Info)
             val inputFile = File(sBasePath, "$mId.mp3")
             if (!inputFile.exists()) inputFile.createNewFile()
             inputFile.writeBytes(mInputBytes)
@@ -38,11 +39,12 @@ interface AudioConverter {
                     inputFile.delete()
                     throw AudioConvertingError()
                 }.also {
-                    Logging.ConsoleLog.log("End convert file id = $mId")
+                    Logging.ConsoleLog.logToFile("End convert file id = $mId", LogLevel.Info)
                 }
             } catch (e: Exception) {
                 inputFile.delete()
-                Logging.ConsoleLog.log(e.message ?: "")
+                Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
+                Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
                 throw AudioConvertingError()
             }
         }
@@ -54,7 +56,7 @@ interface AudioConverter {
     ) : AudioConverter {
 
         override fun convertedBytes(): ByteArray {
-            Logging.ConsoleLog.log("Begin convert file id = $mId")
+            Logging.ConsoleLog.logToFile("Begin convert file id = $mId", LogLevel.Info)
             val inputFile = File(sBasePath, "$mId.oga")
             if (!inputFile.exists()) inputFile.createNewFile()
             inputFile.writeBytes(mInputBytes)
@@ -74,11 +76,12 @@ interface AudioConverter {
                     inputFile.delete()
                     throw AudioConvertingError()
                 }.also {
-                    Logging.ConsoleLog.log("End convert file id = $mId")
+                    Logging.ConsoleLog.logToFile("End convert file id = $mId", LogLevel.Info)
                 }
             } catch (e: Exception) {
                 inputFile.delete()
-                Logging.ConsoleLog.log(e.message ?: "")
+                Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
+                Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
                 throw AudioConvertingError()
             }
         }

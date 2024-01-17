@@ -15,6 +15,7 @@ import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
+import logs.LogLevel
 import logs.Logging
 import sConvertingErrorBtnLabel
 import sConvertingErrorMessage
@@ -154,7 +155,8 @@ class VoiceToMessage(
         } catch (e: IllegalArgumentException) {
             throw FileDownloadException(voiceLink)
         } catch (e: Exception) {
-            Logging.ConsoleLog.log(e.message ?: "")
+            Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
+            Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
             Executable.Dummy()
         }
     }

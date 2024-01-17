@@ -5,6 +5,7 @@ build/
 !**/src/test/**/build/
 config.json
 all_users.txt
+/logs
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
