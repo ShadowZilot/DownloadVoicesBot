@@ -2,6 +2,7 @@ package data
 
 import helpers.storage.StorageShell
 import helpers.storage.jdbc_wrapping.DatabaseHelper
+import java.sql.ResultSet
 import java.sql.SQLException
 
 interface VoiceStorage : StorageShell {
@@ -45,123 +46,159 @@ interface VoiceStorage : StorageShell {
 
         override fun updateVoiceTitle(id: Long, title: String) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `title` = '$title' WHERE `id` = $id"
+                "UPDATE $mTableName SET `title` = ? WHERE `id` = ?",
+                title, id
             )
         }
 
         override fun updateVoiceDeletion(id: Long, isDeleted: Boolean) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `is_deleted` = $isDeleted WHERE `id` = $id"
+                "UPDATE $mTableName SET `is_deleted` = ? WHERE `id` = ?",
+                isDeleted, id
             )
         }
 
         override fun updateDownloadLink(id: Long, voiceLink: String) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `voice_link` = '$voiceLink' WHERE `id` = $id"
+                "UPDATE $mTableName SET `voice_link` = ? WHERE `id` = ?",
+                voiceLink, id
             )
         }
 
         override fun voiceById(id: Long): Voice {
             var voice: Voice? = null
             mDatabase.executeQuery(
-                "SELECT * FROM $mTableName WHERE `id` = $id AND `is_deleted` = 0"
-            ) { item, _ ->
-                voice = try {
-                    Voice(item)
-                } catch (e: SQLException) {
-                    null
-                }
-            }
+                "SELECT * FROM $mTableName WHERE `id` = ? AND `is_deleted` = ?",
+                { item, _ ->
+                    voice = try {
+                        Voice(item)
+                    } catch (e: SQLException) {
+                        null
+                    }
+                },
+                id, false
+            )
             return voice ?: throw VoiceNotFound(id)
         }
 
         override fun voiceFileId(id: Long): String {
             var voiceFileId: String? = null
             mDatabase.executeQuery(
-                "SELECT file_oga_id FROM $mTableName WHERE `id` = $id AND `is_deleted` = 0"
-            ) { item, _ ->
-                voiceFileId = try {
-                    item.getString("file_oga_id")
-                } catch (e: SQLException) {
-                    null
-                }
-            }
+                "SELECT file_oga_id FROM $mTableName WHERE `id` = ? AND `is_deleted` = ?",
+                { item, _ ->
+                    voiceFileId = try {
+                        item.getString("file_oga_id")
+                    } catch (e: SQLException) {
+                        null
+                    }
+                },
+                id, false
+            )
             return voiceFileId ?: throw VoiceNotFound(id)
         }
 
         override fun secretVoiceById(id: Long): Voice {
             var voice: Voice? = null
             mDatabase.executeQuery(
-                "SELECT * FROM $mTableName WHERE `id` = $id"
-            ) { item, _ ->
-                voice = try {
-                    Voice(item)
-                } catch (e: SQLException) {
-                    null
-                }
-            }
+                "SELECT * FROM $mTableName WHERE `id` = ?",
+                { item, _ ->
+                    voice = try {
+                        Voice(item)
+                    } catch (e: SQLException) {
+                        null
+                    }
+                },
+                id
+            )
             return voice ?: throw VoiceNotFound(id)
         }
 
         override fun voiceOgaUpdateFileIdAndLink(id: Long, fileId: String, downloadLink: String) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `file_oga_id` = '$fileId', `voice_link` = '$downloadLink' WHERE `id` = $id"
+                "UPDATE $mTableName SET `file_oga_id` = ?, `voice_link` = ? WHERE `id` = ?",
+                fileId, downloadLink, id
             )
         }
 
         override fun voiceMp3UpdateFileIdAndLink(id: Long, fileId: String, downloadLink: String) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `file_mp3_id` = '$fileId', `voice_link` = '$downloadLink' WHERE `id` = $id"
+                "UPDATE $mTableName SET `file_mp3_id` = ?, `voice_link` = ? WHERE `id` = ?",
+                fileId, downloadLink, id
             )
         }
 
         override fun voiceMp3IdUpdate(id: Long, fileId: String) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `file_mp3_id` = '$fileId' WHERE `id` = $id"
+                "UPDATE $mTableName SET `file_mp3_id` = ? WHERE `id` = ?",
+                fileId, id
             )
         }
 
         override fun secretVoiceFileId(id: Long): String {
             var voiceFileId: String? = null
             mDatabase.executeQuery(
-                "SELECT file_oga_id FROM $mTableName WHERE `id` = $id"
-            ) { item, _ ->
-                voiceFileId = try {
-                    item.getString("file_oga_id")
-                } catch (e: SQLException) {
-                    null
-                }
-            }
+                "SELECT file_oga_id FROM $mTableName WHERE `id` = ?",
+                { item, _ ->
+                    voiceFileId = try {
+                        item.getString("file_oga_id")
+                    } catch (e: SQLException) {
+                        null
+                    }
+                },
+                id
+            )
             return voiceFileId ?: throw VoiceNotFound(id)
         }
 
         override fun voicesList(userId: Long, offset: Int, search: String): List<Voice> {
             val voices = mutableListOf<Voice>()
-            val searchQuery = if (search.isNotEmpty()) "AND INSTR(`title`, '$search') > 0" else ""
-            mDatabase.executeQuery(
-                "SELECT * FROM $mTableName WHERE `user_id` = $userId AND" +
-                        " `is_deleted` = 0 $searchQuery ORDER BY `saved_time` DESC LIMIT 50 OFFSET $offset"
-            ) { item, isNext ->
+            val handlingAction: (item: ResultSet, isNext: Boolean) -> Unit = { item, isNext ->
                 var next = isNext
                 while (next) {
                     voices.add(Voice(item))
                     next = item.next()
                 }
+            }
+            if (search.isNotEmpty()) {
+                mDatabase.executeQuery(
+                    "SELECT * FROM $mTableName WHERE `user_id` = ? AND" +
+                            " `is_deleted` = ? AND INSTR(`title`, ?) > 0 ORDER BY `saved_time` DESC LIMIT 50 OFFSET ?",
+                    handlingAction,
+                    userId, false, search, offset
+                )
+            } else {
+                mDatabase.executeQuery(
+                    "SELECT * FROM $mTableName WHERE `user_id` = ? AND" +
+                            " `is_deleted` = ? ORDER BY `saved_time` DESC LIMIT 50 OFFSET ?",
+                    handlingAction,
+                    userId, false, offset
+                )
             }
             return voices
         }
 
         override fun secretVoiceList(offset: Int, search: String): List<Voice> {
             val voices = mutableListOf<Voice>()
-            val searchQuery = if (search.isNotEmpty()) "WHERE INSTR(`title`, '$search') > 0" else ""
-            mDatabase.executeQuery(
-                "SELECT * FROM $mTableName $searchQuery ORDER BY `saved_time` DESC LIMIT 50 OFFSET $offset"
-            ) { item, isNext ->
+            val handlingAction: (item: ResultSet, isNext: Boolean) -> Unit = { item, isNext ->
                 var next = isNext
                 while (next) {
                     voices.add(Voice(item))
                     next = item.next()
                 }
+            }
+            if (search.isNotEmpty()) {
+                mDatabase.executeQuery(
+                    "SELECT * FROM $mTableName WHERE INSTR(`title`, ?) > 0 ORDER BY" +
+                            " `saved_time` DESC LIMIT 50 OFFSET ?",
+                    handlingAction,
+                    search, offset
+                )
+            } else {
+                mDatabase.executeQuery(
+                    "SELECT * FROM $mTableName ORDER BY" +
+                            " `saved_time` DESC LIMIT 50 OFFSET ?",
+                    handlingAction, offset
+                )
             }
             return voices
         }
@@ -169,14 +206,16 @@ interface VoiceStorage : StorageShell {
         override fun lastVoiceId(userId: Long): Long {
             var lastId = -1L
             mDatabase.executeQuery(
-                "SELECT id FROM $mTableName WHERE `user_id` = $userId ORDER BY `saved_time` DESC LIMIT 1"
-            ) { item, _ ->
-                lastId = try {
-                    item.getLong("id")
-                } catch (e: SQLException) {
-                    -1
-                }
-            }
+                "SELECT id FROM $mTableName WHERE `user_id` = ? ORDER BY `saved_time` DESC LIMIT 1",
+                { item, _ ->
+                    lastId = try {
+                        item.getLong("id")
+                    } catch (e: SQLException) {
+                        -1
+                    }
+                },
+                userId
+            )
             return lastId
         }
 

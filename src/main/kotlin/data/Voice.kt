@@ -1,6 +1,7 @@
 package data
 
 import helpers.storage.Record
+import helpers.storage.jdbc_wrapping.PackedStatementImpl
 import java.sql.ResultSet
 
 data class Voice(
@@ -53,16 +54,25 @@ data class Voice(
         ): T
     }
 
-    override fun deleteSQLQuery(tableName: String) = "DELETE FROM $tableName WHERE `id` = $mId"
+    override fun deleteSQLQuery(tableName: String) = PackedStatementImpl(
+        "DELETE FROM $tableName WHERE `id` = ?",
+        mId
+    )
 
-    override fun insertSQLQuery(tableName: String) = "INSERT INTO $tableName (`file_oga_id`, `file_mp3_id`," +
-            " `user_id`," +
-            " `title`, `voice_link`, `duration`, `saved_time`) VALUES('$mFileOgaId', '$mFileMp3Id'" +
-            ", $mUserId, '$mTitle'," +
-            " '$mVoiceLink', $mDuration, $mSavedTime)"
+    override fun insertSQLQuery(tableName: String) = PackedStatementImpl(
+        "INSERT INTO $tableName (`file_oga_id`, `file_mp3_id`," +
+                " `user_id`," +
+                " `title`, `voice_link`, `duration`, `saved_time`) VALUES(?, ?" +
+                ", ?, ?," +
+                " ?, ?, ?)",
+        mFileOgaId, mFileMp3Id, mUserId, mTitle, mVoiceLink, mDuration, mSavedTime
+    )
 
-    override fun updateSQLQuery(tableName: String) = "UPDATE $tableName SET `file_oga_id` = '$mFileOgaId'," +
-            " `file_mp3_id` = '$mFileMp3Id'," +
-            " `user_id` = $mUserId, `title` = '$mTitle', `voice_link` = '$mVoiceLink'," +
-            " `duration` = $mDuration, `saved_time` = $mSavedTime WHERE `id` = $mId"
+    override fun updateSQLQuery(tableName: String) = PackedStatementImpl(
+        "UPDATE $tableName SET `file_oga_id` = '$mFileOgaId'," +
+                " `file_mp3_id` = ?," +
+                " `user_id` = ?, `title` = ?, `voice_link` = ?," +
+                " `duration` = ?, `saved_time` = ? WHERE `id` = ?",
+        mFileOgaId, mFileMp3Id, mUserId, mTitle, mVoiceLink, mDuration, mSavedTime, mId
+    )
 }

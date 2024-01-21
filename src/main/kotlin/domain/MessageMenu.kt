@@ -28,33 +28,16 @@ interface MessageMenu {
                 mKey,
                 ContextString.Base.Strings().string(sStartMessage, mUpdating),
                 InlineKeyboardMarkup(
-                    if (mUpdating.map(UpdatingLanguageCode()) == "ru") {
-                        listOf(
-                            InlineButton(
-                                ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
-                                mInlineMode = InlineModeQuery.CurrentChat()
-                            ),
-                            InlineButton(
-                                ContextString.Base.Strings().string(sShareVoices, mUpdating),
-                                mInlineMode = InlineModeQuery.OtherChat()
-                            ),
-                            InlineButton(
-                                ContextString.Base.Strings().string(sDonateLabel, mUpdating),
-                                "https://www.tinkoff.ru/rm/ponomarev.egor224/iy7cZ40310"
-                            )
-                        ).convertToVertical()
-                    } else {
-                        listOf(
-                            InlineButton(
-                                ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
-                                mInlineMode = InlineModeQuery.CurrentChat()
-                            ),
-                            InlineButton(
-                                ContextString.Base.Strings().string(sShareVoices, mUpdating),
-                                mInlineMode = InlineModeQuery.OtherChat()
-                            )
-                        ).convertToVertical()
-                    }
+                    listOf(
+                        InlineButton(
+                            ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
+                            mInlineMode = InlineModeQuery.CurrentChat()
+                        ),
+                        InlineButton(
+                            ContextString.Base.Strings().string(sShareVoices, mUpdating),
+                            mInlineMode = InlineModeQuery.OtherChat()
+                        )
+                    ).convertToVertical()
                 )
             )
         }

@@ -1,10 +1,7 @@
 package features.download_voice.mp3
 
-import ads.AdsMessage
-import ads.AdsRandomizer
 import chain.Chain
 import core.Updating
-import core.storage.Storages
 import data.VoiceStorage
 import domain.VoiceFactory
 import event_handlers.OnAudioSend
@@ -28,39 +25,27 @@ class CatchAudio : Chain(OnAudioSend()) {
         mStates.state(updating).editor(mStates).apply {
             putBoolean("isAudio", true)
         }.commit()
-        return AdsRandomizer.Base(
-            updating,
-            mStates,
-            listOf(
-                AdsMessage.Base(
-                    mKey, lastVoiceId.toInt(),
-                    updating
-                ).message()
-            ),
-            listOf(
-                SendMessage(
-                    mKey,
-                    ContextString.Base.Strings().string(sTitleSuggestion, updating),
-                    InlineKeyboardMarkup(
-                        listOf(
-                            InlineButton(
-                                ContextString.Base.Strings().string(sSaveAudioNameLabel, updating),
-                                mCallbackData = "leftFileName=$lastVoiceId"
-                            ),
-                            InlineButton(
-                                ContextString.Base.Strings().string(sCancelLabel, updating),
-                                mCallbackData = "cancelSaving=$lastVoiceId"
-                            ),
-                        ).convertToVertical()
-                    )
-                ) {
-                    mStates.state(updating).editor(mStates).apply {
-                        putInt("waitForTitle", lastVoiceId.toInt())
-                    }.commit()
-                }
-            ),
-            Storages.Main.Provider().stConfig.configValueLong("adTimeout")
-        ).executableList()
-
+        return listOf(
+            SendMessage(
+                mKey,
+                ContextString.Base.Strings().string(sTitleSuggestion, updating),
+                InlineKeyboardMarkup(
+                    listOf(
+                        InlineButton(
+                            ContextString.Base.Strings().string(sSaveAudioNameLabel, updating),
+                            mCallbackData = "leftFileName=$lastVoiceId"
+                        ),
+                        InlineButton(
+                            ContextString.Base.Strings().string(sCancelLabel, updating),
+                            mCallbackData = "cancelSaving=$lastVoiceId"
+                        ),
+                    ).convertToVertical()
+                )
+            ) {
+                mStates.state(updating).editor(mStates).apply {
+                    putInt("waitForTitle", lastVoiceId.toInt())
+                }.commit()
+            }
+        )
     }
 }
