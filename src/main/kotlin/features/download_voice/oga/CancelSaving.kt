@@ -20,7 +20,7 @@ class CancelSaving : Chain(OnCallbackDataGotten("cancelSaving")) {
     override suspend fun executableChain(updating: Updating): List<Executable> {
         val voiceId = updating.map(UpdatingCallbackInt("cancelSaving"))
         return try {
-            VoiceStorage.Base.Instance().voiceById(voiceId.toLong())
+            if (voiceId != -1) VoiceStorage.Base.Instance().voiceById(voiceId.toLong())
             listOf(
                 AnswerToCallback(
                     mKey,
@@ -32,6 +32,8 @@ class CancelSaving : Chain(OnCallbackDataGotten("cancelSaving")) {
             mStates.state(updating).editor(mStates).apply {
                 deleteValue("waitForTitle")
                 deleteValue("isAudio")
+                deleteValue("videoNoteId")
+                deleteValue("videoDuration")
             }.commit()
             listOf(
                 AnswerToCallback(

@@ -7,6 +7,9 @@ import features.download_voice.oga.CancelSaving
 import features.download_voice.oga.CatchTitle
 import features.download_voice.oga.CatchVoice
 import features.download_voice.oga.SkipName
+import features.download_voice.video_notes.CatchVideoName
+import features.download_voice.video_notes.CatchVideoNote
+import features.download_voice.video_notes.SkipVideoName
 
 class DownloadVoiceFeature : BotChains {
 
@@ -16,6 +19,9 @@ class DownloadVoiceFeature : BotChains {
         SkipName(),
         CancelSaving(),
         CatchAudio(),
-        LeaveAudioName()
+        LeaveAudioName(),
+        CatchVideoNote(),
+        CatchVideoName(),
+        SkipVideoName()
     )
 }

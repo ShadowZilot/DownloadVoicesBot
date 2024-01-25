@@ -62,10 +62,10 @@ data class Voice(
     override fun insertSQLQuery(tableName: String) = PackedStatementImpl(
         "INSERT INTO $tableName (`file_oga_id`, `file_mp3_id`," +
                 " `user_id`," +
-                " `title`, `voice_link`, `duration`, `saved_time`) VALUES(?, ?" +
+                " `title`, `voice_link`, `duration`, `saved_time`, `is_deleted`) VALUES(?, ?" +
                 ", ?, ?," +
-                " ?, ?, ?)",
-        mFileOgaId, mFileMp3Id, mUserId, mTitle, mVoiceLink, mDuration, mSavedTime
+                " ?, ?, ?, ?)",
+        mFileOgaId, mFileMp3Id, mUserId, mTitle, mVoiceLink, mDuration, mSavedTime, mIsDeleted
     )
 
     override fun updateSQLQuery(tableName: String) = PackedStatementImpl(
