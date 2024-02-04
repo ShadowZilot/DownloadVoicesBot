@@ -1,6 +1,7 @@
 package features.moderator.chains
 
 import broadcast.BroadcastHandling
+import broadcast.BroadcastMessageType
 import broadcast.RawBroadcast
 import chain.Chain
 import core.Updating
@@ -73,9 +74,12 @@ class BeginBroadcast : Chain(OnCallbackGotten("beginBroadcast")) {
                 sBroadcastMessage,
                 updating
             ),
+            emptyList(),
             InlineKeyboardMarkup(
                 listOf()
-            )
+            ),
+            "",
+            BroadcastMessageType.Text
         )
     }
 }
