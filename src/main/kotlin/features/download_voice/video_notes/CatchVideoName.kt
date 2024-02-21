@@ -4,6 +4,7 @@ import chain.Chain
 import core.Updating
 import data.Voice
 import data.VoiceStorage
+import domain.SuggestionMessage
 import domain.VoiceFromVideoNote
 import domain.converting.AudioConverter
 import domain.converting.SendAudioCustom
@@ -83,7 +84,8 @@ class CatchVideoName : Chain(OnTextGotten()) {
                         ),
                         mChatId = updating.map(UserIdUpdating()),
                         mOnFileId = onFileIdGotten
-                    )
+                    ),
+                    SuggestionMessage.Base(mKey, updating).message()
                 )
             } else {
                 listOf(

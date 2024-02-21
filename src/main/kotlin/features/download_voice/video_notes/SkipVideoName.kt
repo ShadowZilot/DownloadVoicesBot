@@ -3,6 +3,7 @@ package features.download_voice.video_notes
 import chain.Chain
 import core.Updating
 import data.VoiceStorage
+import domain.SuggestionMessage
 import domain.VoiceFromVideoNote
 import domain.converting.AudioConverter
 import domain.converting.SendAudioCustom
@@ -85,7 +86,8 @@ class SkipVideoName : Chain(OnCallbackGotten("skipVideoName")) {
                     ),
                     mChatId = updating.map(UserIdUpdating()),
                     mOnFileId = onFileIdGotten
-                )
+                ),
+                SuggestionMessage.Base(mKey, updating).message()
             )
         }
     }

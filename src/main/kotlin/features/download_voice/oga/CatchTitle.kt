@@ -3,6 +3,7 @@ package features.download_voice.oga
 import chain.Chain
 import core.Updating
 import data.VoiceStorage
+import domain.SuggestionMessage
 import domain.VoiceToMessage
 import executables.Executable
 import executables.SendMessage
@@ -47,7 +48,8 @@ class CatchTitle : Chain(OnTextGotten()) {
                                 )
                             }
                         }
-                    )
+                    ),
+                    SuggestionMessage.Base(mKey, updating).message()
                 )
             } else {
                 listOf(

@@ -4,6 +4,7 @@ import chain.Chain
 import core.Updating
 import data.VoiceNotFound
 import data.VoiceStorage
+import domain.SuggestionMessage
 import domain.VoiceToMessage
 import executables.AnswerToCallback
 import executables.DeleteMessage
@@ -53,7 +54,8 @@ class LeaveAudioName : Chain(OnCallbackDataGotten("leftFileName")) {
                                 )
                             }
                         }
-                    )
+                    ),
+                    SuggestionMessage.Base(mKey, updating).message()
                 )
             }
         } catch (e: NotFoundStateValue) {
