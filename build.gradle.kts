@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.human_developing_soft"
-version = "1.1.8"
+version = "1.1.9"
 
 repositories {
     mavenCentral()
@@ -13,6 +13,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
 
 tasks.test {

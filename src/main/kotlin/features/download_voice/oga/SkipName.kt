@@ -4,6 +4,7 @@ import chain.Chain
 import core.Updating
 import data.VoiceNotFound
 import data.VoiceStorage
+import domain.SuggestionMessage
 import domain.VoiceToMessage
 import executables.AnswerToCallback
 import executables.DeleteMessage
@@ -54,7 +55,8 @@ class SkipName : Chain(OnCallbackDataGotten("skipName")) {
                                 )
                             }
                         }
-                    )
+                    ),
+                    SuggestionMessage.Base(mKey, updating).message()
                 )
             }
         } catch (e: NotFoundStateValue) {

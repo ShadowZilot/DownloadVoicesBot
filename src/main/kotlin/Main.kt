@@ -2,10 +2,12 @@ import core.Bot
 import core.BotProvider
 import core.storage.Storages
 import data.VoiceStorage
+import data.poll.PollStorage
 import features.ads.AdsFeature
 import features.download_voice.DownloadVoiceFeature
 import features.greeting.GreetingFunction
 import features.moderator.ModeratorFeature
+import features.poll.PollChains
 import features.voice_list.VoiceListFeature
 import helpers.storage.jdbc_wrapping.DatabaseHelper
 
@@ -20,11 +22,14 @@ fun main(args: Array<String>) {
     )
     VoiceStorage.Base.Instance.create("voices", db)
     db.createTable(VoiceStorage.Base.Instance().tableSchema())
+    PollStorage.Base.Instance.create("polls", db)
+    db.createTable(PollStorage.Base.Instance().tableSchema())
     sBot = provider.createBotPolling(
         VoiceListFeature(),
         GreetingFunction(),
         AdsFeature(),
         DownloadVoiceFeature(),
+        PollChains(),
         ModeratorFeature()
     )
 }
