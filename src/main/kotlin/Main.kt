@@ -1,3 +1,4 @@
+import api.voices.VoicesRoutes
 import core.Bot
 import core.BotProvider
 import core.storage.Storages
@@ -16,7 +17,10 @@ var sBasePath = "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/"
 
 fun main(args: Array<String>) {
     sBasePath = if (args.isEmpty()) "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/" else args[0]
-    val provider = BotProvider.Base(args)
+    val provider = BotProvider.Base(
+        args,
+        VoicesRoutes()
+    )
     val db = DatabaseHelper.Base.Instance.provideInstance(
         Storages.Main.Provider().stConfig
     )
@@ -24,12 +28,14 @@ fun main(args: Array<String>) {
     db.createTable(VoiceStorage.Base.Instance().tableSchema())
     PollStorage.Base.Instance.create("polls", db)
     db.createTable(PollStorage.Base.Instance().tableSchema())
-    sBot = provider.createBotPolling(
+    provider.createdBot(
         VoiceListFeature(),
         GreetingFunction(),
         AdsFeature(),
         DownloadVoiceFeature(),
         PollChains(),
         ModeratorFeature()
-    )
+    ) { bot ->
+        sBot = bot
+    }
 }

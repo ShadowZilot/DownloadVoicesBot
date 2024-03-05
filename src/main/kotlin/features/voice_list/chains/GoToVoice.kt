@@ -81,7 +81,7 @@ class GoToVoice : Chain(OnTextViaBot()) {
                 mKey,
                 updating, mIsJustSaved = false, mIsAudio = true
             ) { mp3Id ->
-                VoiceStorage.Base.Instance().voiceMp3IdUpdate(voiceId.toLong(), mp3Id)
+                VoiceStorage.Base.Instance().voiceMp3IdUpdate(voiceId, mp3Id)
             }
         )
         sBot.implementRequest(

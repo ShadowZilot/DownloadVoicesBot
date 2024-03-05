@@ -19,6 +19,8 @@ interface VoiceStorage : StorageShell {
 
     fun voiceFileId(id: Long): String
 
+    fun voiceFileIdMp3(id: Long): String
+
     fun secretVoiceById(id: Long): Voice
 
     fun voiceOgaUpdateFileIdAndLink(id: Long, fileId: String, downloadLink: String)
@@ -79,6 +81,22 @@ interface VoiceStorage : StorageShell {
                 id, false
             )
             return voice ?: throw VoiceNotFound(id)
+        }
+
+        override fun voiceFileIdMp3(id: Long): String {
+            var voiceFileId: String? = null
+            mDatabase.executeQuery(
+                "SELECT file_mp3_id FROM $mTableName WHERE `id` = ? AND `is_deleted` = ?",
+                { item, _ ->
+                    voiceFileId = try {
+                        item.getString("file_mp3_id")
+                    } catch (e: SQLException) {
+                        null
+                    }
+                },
+                id, false
+            )
+            return voiceFileId ?: throw VoiceNotFound(id)
         }
 
         override fun voiceFileId(id: Long): String {
