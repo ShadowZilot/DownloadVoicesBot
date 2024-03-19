@@ -86,8 +86,7 @@ class SkipVideoName : Chain(OnCallbackGotten("skipVideoName")) {
                     ),
                     mChatId = updating.map(UserIdUpdating()),
                     mOnFileId = onFileIdGotten
-                ),
-                SuggestionMessage.Base(mKey, updating).message()
+                )
             )
         }
     }

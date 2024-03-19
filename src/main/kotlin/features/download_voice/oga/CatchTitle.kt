@@ -48,8 +48,7 @@ class CatchTitle : Chain(OnTextGotten()) {
                                 )
                             }
                         }
-                    ),
-                    SuggestionMessage.Base(mKey, updating).message()
+                    )
                 )
             } else {
                 listOf(

@@ -84,8 +84,7 @@ class CatchVideoName : Chain(OnTextGotten()) {
                         ),
                         mChatId = updating.map(UserIdUpdating()),
                         mOnFileId = onFileIdGotten
-                    ),
-                    SuggestionMessage.Base(mKey, updating).message()
+                    )
                 )
             } else {
                 listOf(
