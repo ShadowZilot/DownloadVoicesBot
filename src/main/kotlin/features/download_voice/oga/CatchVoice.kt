@@ -7,9 +7,12 @@ import domain.VoiceFactory
 import executables.Executable
 import executables.SendMessage
 import handlers.OnVoiceGotten
+import helper.UpdatingIsUserPremium
+import helper.VoiceEditingButton
 import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
+import keyboard_markup.KeyboardButton
 import sCancelLabel
 import sSkipTitleLabel
 import sTitleSuggestion
@@ -30,16 +33,25 @@ class CatchVoice : Chain(OnVoiceGotten()) {
                 mKey,
                 Strings().string(sTitleSuggestion, updating),
                 InlineKeyboardMarkup(
-                    listOf(
-                        InlineButton(
-                            Strings().string(sSkipTitleLabel, updating),
-                            mCallbackData = "skipName=$lastVoiceId"
-                        ),
-                        InlineButton(
-                            Strings().string(sCancelLabel, updating),
-                            mCallbackData = "cancelSaving=$lastVoiceId"
-                        ),
-                    ).convertToVertical()
+                    mutableListOf<KeyboardButton>().apply {
+                        if (updating.map(UpdatingIsUserPremium())) {
+                            add(
+                                VoiceEditingButton.Base(lastVoiceId, updating).button()
+                            )
+                        }
+                        add(
+                            InlineButton(
+                                Strings().string(sSkipTitleLabel, updating),
+                                mCallbackData = "skipName=$lastVoiceId"
+                            )
+                        )
+                        add(
+                            InlineButton(
+                                Strings().string(sCancelLabel, updating),
+                                mCallbackData = "cancelSaving=$lastVoiceId"
+                            )
+                        )
+                    }.convertToVertical()
                 )
             ) {
                 mStates.state(updating).editor(mStates).apply {

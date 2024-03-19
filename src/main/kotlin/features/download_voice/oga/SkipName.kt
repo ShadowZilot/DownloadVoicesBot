@@ -55,8 +55,7 @@ class SkipName : Chain(OnCallbackDataGotten("skipName")) {
                                 )
                             }
                         }
-                    ),
-                    SuggestionMessage.Base(mKey, updating).message()
+                    )
                 )
             }
         } catch (e: NotFoundStateValue) {

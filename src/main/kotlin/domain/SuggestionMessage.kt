@@ -12,7 +12,6 @@ import sSuggestionButton
 import sSuggestionMessage
 import translations.domain.ContextString.Base.Strings
 import updating.UserIdUpdating
-import kotlin.random.Random
 
 interface SuggestionMessage {
 
