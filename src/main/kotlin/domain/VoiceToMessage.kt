@@ -140,24 +140,13 @@ class VoiceToMessage(
                 }
             }
         } catch (e: AudioConvertingError) {
-            SendMessage(
-                mKey,
-                Strings.invoke().string(sConvertingErrorMessage, mUpdating),
-                InlineKeyboardMarkup(
-                    listOf(
-                        InlineButton(
-                            Strings.invoke().string(sConvertingErrorBtnLabel, mUpdating),
-                            "https://t.me/ShadowZilot"
-                        )
-                    ).convertToVertical()
-                )
-            )
+            ContactDevMessage(mKey, mUpdating)
         } catch (e: IllegalArgumentException) {
             throw FileDownloadException(voiceLink)
         } catch (e: Exception) {
             Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
             Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
-            Executable.Dummy()
+            ContactDevMessage(mKey, mUpdating)
         }
     }
 }

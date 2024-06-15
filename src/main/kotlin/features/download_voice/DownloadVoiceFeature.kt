@@ -14,11 +14,11 @@ import features.download_voice.video_notes.SkipVideoName
 class DownloadVoiceFeature : BotChains {
 
     override fun chains() = listOf(
-        CatchVoice(),
+        ChainForCatchMedia(CatchVoice()),
         CatchTitle(),
         SkipName(),
         CancelSaving(),
-        CatchAudio(),
+        ChainForCatchMedia(CatchAudio()),
         LeaveAudioName(),
         CatchVideoNote(),
         CatchVideoName(),
