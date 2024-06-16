@@ -4,10 +4,9 @@ import chain.Chain
 import core.Updating
 import data.VoiceNotFound
 import data.VoiceStorage
-import domain.MessageMenu
+import domain.messages.MessageMenu
 import executables.AnswerToCallback
 import executables.DeleteMessage
-import executables.EditTextMessage
 import executables.Executable
 import handlers.OnCallbackDataGotten
 import sVoiceAlreadySaved

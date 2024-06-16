@@ -1,4 +1,4 @@
-package domain
+package domain.messages
 
 import core.Updating
 import executables.Executable
@@ -7,12 +7,10 @@ import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
-import sDonateLabel
 import sShareVoices
 import sStartMessage
 import sVoiceListLabel
 import translations.domain.ContextString
-import updating.UpdatingLanguageCode
 
 interface MessageMenu {
 

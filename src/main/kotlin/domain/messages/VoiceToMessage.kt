@@ -1,4 +1,4 @@
-package domain
+package domain.messages
 
 import core.Updating
 import core.storage.Storages
@@ -6,8 +6,8 @@ import data.Voice
 import domain.converting.AudioConverter
 import domain.converting.AudioConvertingError
 import domain.converting.SendAudioCustom
+import domain.messages.ContactDevMessage
 import executables.Executable
-import executables.SendMessage
 import helpers.FileDownload
 import helpers.FileDownloadException
 import helpers.ToMarkdownSupported
@@ -17,8 +17,7 @@ import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
 import logs.LogLevel
 import logs.Logging
-import sConvertingErrorBtnLabel
-import sConvertingErrorMessage
+import sDeleteLabel
 import sEmptyTitle
 import sShareVoices
 import sVoiceListLabel
@@ -104,6 +103,10 @@ class VoiceToMessage(
                                 InlineButton(
                                     Strings().string(sShareVoices, mUpdating),
                                     mInlineMode = InlineModeQuery.OtherChat()
+                                ),
+                                InlineButton(
+                                    Strings().string(sDeleteLabel, mUpdating),
+                                    mCallbackData = "deleteVoice=${id}"
                                 )
                             ).convertToVertical()
                         ),
@@ -131,6 +134,10 @@ class VoiceToMessage(
                                 InlineButton(
                                     Strings().string(sShareVoices, mUpdating),
                                     mInlineMode = InlineModeQuery.OtherChat()
+                                ),
+                                InlineButton(
+                                    Strings().string(sDeleteLabel, mUpdating),
+                                    mCallbackData = "deleteVoice=${id}"
                                 )
                             ).convertToVertical()
                         ),

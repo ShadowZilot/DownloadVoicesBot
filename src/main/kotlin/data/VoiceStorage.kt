@@ -17,6 +17,8 @@ interface VoiceStorage : StorageShell {
 
     fun voiceById(id: Long): Voice
 
+    fun deleteVoice(id: Long)
+
     fun voiceFileId(id: Long): String
 
     fun secretVoiceById(id: Long): Voice
@@ -79,6 +81,11 @@ interface VoiceStorage : StorageShell {
                 id, false
             )
             return voice ?: throw VoiceNotFound(id)
+        }
+
+        override fun deleteVoice(id: Long) {
+            mDatabase.executeQueryWithoutResult(
+                "UPDATE $mTableName SET `is_deleted` = 1 WHERE `id` = ?", id)
         }
 
         override fun voiceFileId(id: Long): String {

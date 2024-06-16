@@ -5,6 +5,7 @@ import data.VoiceStorage
 import data.poll.PollStorage
 import features.ads.AdsFeature
 import features.download_voice.DownloadVoiceFeature
+import features.editing_voices.EditingVoicesFeature
 import features.greeting.GreetingFunction
 import features.moderator.ModeratorFeature
 import features.poll.PollChains
@@ -29,6 +30,7 @@ fun main(args: Array<String>) {
         GreetingFunction(),
         AdsFeature(),
         DownloadVoiceFeature(),
+        EditingVoicesFeature(),
         PollChains(),
         ModeratorFeature()
     )

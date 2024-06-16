@@ -1,4 +1,4 @@
-package domain
+package domain.messages
 
 import core.Updating
 import executables.Executable

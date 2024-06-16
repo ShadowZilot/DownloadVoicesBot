@@ -3,7 +3,7 @@ package features.voice_list.chains
 import chain.Chain
 import core.Updating
 import data.VoiceStorage
-import domain.VoiceToMessage
+import domain.messages.VoiceToMessage
 import executables.DeleteMessage
 import executables.Executable
 import executables.SendMessage
@@ -16,6 +16,7 @@ import org.json.JSONObject
 import sBot
 import sDownloadVoice
 import translations.domain.ContextString
+import updating.UpdatingItem
 import updating.UpdatingMessage
 import updating.UserIdUpdating
 
@@ -49,7 +50,7 @@ class GoToVoice : Chain(OnTextViaBot()) {
                             deleteWaitMessageAction
                         )
                         sBot.implementRequest(
-                            sendAudioAction.map(JSONObject()),
+                            sendAudioAction.map(updating.map(UpdatingItem())),
                             sendAudioAction
                         )
                     } catch (e: FileDownloadException) {

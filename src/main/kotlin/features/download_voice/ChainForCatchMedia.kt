@@ -3,7 +3,7 @@ package features.download_voice
 import chain.Chain
 import core.FileIdFailed
 import core.Updating
-import domain.ContactDevMessage
+import domain.messages.ContactDevMessage
 import domain.logExceptionToAll
 import executables.Executable
 import handlers.BotRecognizerEvent

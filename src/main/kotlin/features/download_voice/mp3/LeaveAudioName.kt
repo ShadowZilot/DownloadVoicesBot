@@ -4,8 +4,7 @@ import chain.Chain
 import core.Updating
 import data.VoiceNotFound
 import data.VoiceStorage
-import domain.SuggestionMessage
-import domain.VoiceToMessage
+import domain.messages.VoiceToMessage
 import executables.AnswerToCallback
 import executables.DeleteMessage
 import executables.Executable

@@ -3,8 +3,7 @@ package features.download_voice.oga
 import chain.Chain
 import core.Updating
 import data.VoiceStorage
-import domain.SuggestionMessage
-import domain.VoiceToMessage
+import domain.messages.VoiceToMessage
 import executables.Executable
 import executables.SendMessage
 import handlers.OnTextGotten
