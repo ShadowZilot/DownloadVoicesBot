@@ -6,7 +6,6 @@ import data.Voice
 import domain.converting.AudioConverter
 import domain.converting.AudioConvertingError
 import domain.converting.SendAudioCustom
-import domain.messages.ContactDevMessage
 import executables.Executable
 import helpers.FileDownload
 import helpers.FileDownloadException
@@ -17,7 +16,6 @@ import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
 import logs.LogLevel
 import logs.Logging
-import sDeleteLabel
 import sEmptyTitle
 import sShareVoices
 import sVoiceListLabel
@@ -120,6 +118,8 @@ class VoiceToMessage(
             ContactDevMessage(mKey, mUpdating)
         } catch (e: IllegalArgumentException) {
             throw FileDownloadException(voiceLink)
+        } catch (e: FileDownloadException) {
+            throw e
         } catch (e: Exception) {
             Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
             Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
