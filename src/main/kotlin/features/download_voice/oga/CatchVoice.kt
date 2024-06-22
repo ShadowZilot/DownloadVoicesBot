@@ -44,6 +44,8 @@ class CatchVoice : Chain(OnVoiceGotten()) {
             ) {
                 mStates.state(updating).editor(mStates).apply {
                     putInt("waitForTitle", lastVoiceId.toInt())
+                    deleteValue("waitForNewVoiceName")
+                    deleteValue("nameEditingMessage")
                 }.commit()
             }
         )

@@ -2,6 +2,7 @@ package features.download_voice.video_notes
 
 import chain.Chain
 import core.Updating
+import core.storage.Storages
 import data.Voice
 import data.VoiceStorage
 import domain.SuggestionMessage
@@ -53,7 +54,7 @@ class CatchVideoName : Chain(OnTextGotten()) {
                     deleteValue("videoNoteId")
                 }.commit()
             }
-            if (videoName.length <= 128) {
+            if (videoName.length <= Storages.Main.Provider().stConfig.configValueLong("maxVoiceNameLen")) {
                 listOf(
                     SendAudioCustom(
                         mKey,

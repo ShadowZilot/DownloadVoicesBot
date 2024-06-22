@@ -94,22 +94,7 @@ class VoiceToMessage(
                             id,
                             FileDownload.Base(voiceLink).download()
                         ).convertedBytes(),
-                        mMarkup = InlineKeyboardMarkup(
-                            listOf(
-                                InlineButton(
-                                    Strings().string(sVoiceListLabel, mUpdating),
-                                    mInlineMode = InlineModeQuery.CurrentChat()
-                                ),
-                                InlineButton(
-                                    Strings().string(sShareVoices, mUpdating),
-                                    mInlineMode = InlineModeQuery.OtherChat()
-                                ),
-                                InlineButton(
-                                    Strings().string(sDeleteLabel, mUpdating),
-                                    mCallbackData = "deleteVoice=${id}"
-                                )
-                            ).convertToVertical()
-                        ),
+                        mMarkup = VoiceKeyboard.invoke(mUpdating, id.toInt()),
                         mChatId = mUpdating.map(UserIdUpdating()),
                         mOnFileId = mOnFileId
                     )
@@ -125,22 +110,7 @@ class VoiceToMessage(
                         }",
                         duration,
                         mFileId = fileMp3Id,
-                        mMarkup = InlineKeyboardMarkup(
-                            listOf(
-                                InlineButton(
-                                    Strings().string(sVoiceListLabel, mUpdating),
-                                    mInlineMode = InlineModeQuery.CurrentChat()
-                                ),
-                                InlineButton(
-                                    Strings().string(sShareVoices, mUpdating),
-                                    mInlineMode = InlineModeQuery.OtherChat()
-                                ),
-                                InlineButton(
-                                    Strings().string(sDeleteLabel, mUpdating),
-                                    mCallbackData = "deleteVoice=${id}"
-                                )
-                            ).convertToVertical()
-                        ),
+                        mMarkup = VoiceKeyboard.invoke(mUpdating, id.toInt()),
                         mChatId = mUpdating.map(UserIdUpdating()),
                         mOnFileId = mOnFileId
                     )

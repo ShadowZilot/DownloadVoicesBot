@@ -30,6 +30,8 @@ class CatchVideoNote : Chain(OnVideoNoteGotten()) {
         mStates.state(updating).editor(mStates).apply {
             putString("videoNoteId", fileId)
             putInt("videoDuration", duration)
+            deleteValue("waitForNewVoiceName")
+            deleteValue("nameEditingMessage")
         }.commit()
         return listOf(
             SendMessage(

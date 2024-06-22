@@ -13,6 +13,8 @@ interface VoiceStorage : StorageShell {
 
     fun updateVoiceDeletion(id: Long, isDeleted: Boolean)
 
+    fun updateVoiceName(id: Long, name: String)
+
     fun updateDownloadLink(id: Long, voiceLink: String)
 
     fun voiceById(id: Long): Voice
@@ -57,6 +59,13 @@ interface VoiceStorage : StorageShell {
             mDatabase.executeQueryWithoutResult(
                 "UPDATE $mTableName SET `is_deleted` = ? WHERE `id` = ?",
                 isDeleted, id
+            )
+        }
+
+        override fun updateVoiceName(id: Long, name: String) {
+            mDatabase.executeQueryWithoutResult(
+                "UPDATE $mTableName SET `title` = ? WHERE `id` = ?",
+                name, id
             )
         }
 

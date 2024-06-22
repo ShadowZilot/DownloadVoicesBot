@@ -11,13 +11,15 @@ import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
 import sDeleteLabel
+import sEditVoiceLabel
 import sShareVoices
 import sVoiceListLabel
 import translations.domain.ContextString
 
 class EditVoiceCaptionToNormal(
     private val mKey: String,
-    private val mUpdating: Updating
+    private val mUpdating: Updating,
+    private val mMessageId: Int = -1
 ) : Voice.Mapper<Executable> {
 
     override fun map(
@@ -38,22 +40,38 @@ class EditVoiceCaptionToNormal(
                     Storages.Main.Provider().stConfig.configValueString("botName")
                 ).convertedString()
             }",
-            mMarkup = InlineKeyboardMarkup(
-                listOf(
-                    InlineButton(
-                        ContextString.Base.Strings().string(sVoiceListLabel, mUpdating),
-                        mInlineMode = InlineModeQuery.CurrentChat()
-                    ),
-                    InlineButton(
-                        ContextString.Base.Strings().string(sShareVoices, mUpdating),
-                        mInlineMode = InlineModeQuery.OtherChat()
-                    ),
-                    InlineButton(
-                        ContextString.Base.Strings().string(sDeleteLabel, mUpdating),
-                        mCallbackData = "deleteVoice=${id}"
-                    )
-                ).convertToVertical()
-            )
+            mEditingMessageId = mMessageId.toLong(),
+            mMarkup = VoiceKeyboard.invoke(mUpdating, id.toInt())
         )
     }
+}
+
+object VoiceKeyboard {
+
+    operator fun invoke(updating: Updating, voiceId: Int) = InlineKeyboardMarkup(
+        listOf(
+            listOf(
+                InlineButton(
+                    ContextString.Base.Strings().string(sDeleteLabel, updating),
+                    mCallbackData = "deleteVoice=${voiceId}"
+                ),
+                InlineButton(
+                    ContextString.Base.Strings().string(sEditVoiceLabel, updating),
+                    mCallbackData = "renameVoice=${voiceId}"
+                )
+            ),
+            listOf(
+                InlineButton(
+                    ContextString.Base.Strings().string(sVoiceListLabel, updating),
+                    mInlineMode = InlineModeQuery.CurrentChat()
+                )
+            ),
+            listOf(
+                InlineButton(
+                    ContextString.Base.Strings().string(sShareVoices, updating),
+                    mInlineMode = InlineModeQuery.OtherChat()
+                )
+            ),
+        )
+    )
 }

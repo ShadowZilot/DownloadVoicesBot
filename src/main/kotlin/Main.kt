@@ -15,6 +15,7 @@ import helpers.storage.jdbc_wrapping.DatabaseHelper
 lateinit var sBot: Bot
 var sBasePath = "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/"
 
+
 fun main(args: Array<String>) {
     sBasePath = if (args.isEmpty()) "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/" else args[0]
     val provider = BotProvider.Base(args)
@@ -26,8 +27,8 @@ fun main(args: Array<String>) {
     PollStorage.Base.Instance.create("polls", db)
     db.createTable(PollStorage.Base.Instance().tableSchema())
     sBot = provider.createBotPolling(
-        VoiceListFeature(),
         GreetingFunction(),
+        VoiceListFeature(),
         AdsFeature(),
         DownloadVoiceFeature(),
         EditingVoicesFeature(),
