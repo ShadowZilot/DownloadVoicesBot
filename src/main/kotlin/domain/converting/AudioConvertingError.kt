@@ -1,3 +1,8 @@
 package domain.converting
 
-class AudioConvertingError : RuntimeException("Error while converting audio")
+class AudioConvertingError(
+    errorMessage: String?
+) : RuntimeException(buildString {
+    appendLine("Error while converting audio")
+    appendLine(errorMessage)
+})

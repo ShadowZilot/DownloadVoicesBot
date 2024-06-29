@@ -39,6 +39,8 @@ class SkipAd : Chain(OnCallbackDataGotten("skipAd")) {
             ) {
                 mStates.state(updating).editor(mStates).apply {
                     putInt("waitForTitle", voiceId)
+                    deleteValue("waitForNewVoiceName")
+                    deleteValue("nameEditingMessage")
                 }.commit()
             }
         )

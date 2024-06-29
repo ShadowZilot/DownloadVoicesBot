@@ -1,4 +1,4 @@
-package domain
+package domain.messages
 
 import core.Updating
 import core.storage.Storages
@@ -7,7 +7,6 @@ import domain.converting.AudioConverter
 import domain.converting.AudioConvertingError
 import domain.converting.SendAudioCustom
 import executables.Executable
-import executables.SendMessage
 import helpers.FileDownload
 import helpers.FileDownloadException
 import helpers.ToMarkdownSupported
@@ -17,8 +16,6 @@ import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
 import logs.LogLevel
 import logs.Logging
-import sConvertingErrorBtnLabel
-import sConvertingErrorMessage
 import sEmptyTitle
 import sShareVoices
 import sVoiceListLabel
@@ -95,18 +92,7 @@ class VoiceToMessage(
                             id,
                             FileDownload.Base(voiceLink).download()
                         ).convertedBytes(),
-                        mMarkup = InlineKeyboardMarkup(
-                            listOf(
-                                InlineButton(
-                                    Strings().string(sVoiceListLabel, mUpdating),
-                                    mInlineMode = InlineModeQuery.CurrentChat()
-                                ),
-                                InlineButton(
-                                    Strings().string(sShareVoices, mUpdating),
-                                    mInlineMode = InlineModeQuery.OtherChat()
-                                )
-                            ).convertToVertical()
-                        ),
+                        mMarkup = VoiceKeyboard.invoke(mUpdating, id.toInt()),
                         mChatId = mUpdating.map(UserIdUpdating()),
                         mOnFileId = mOnFileId
                     )
@@ -122,42 +108,22 @@ class VoiceToMessage(
                         }",
                         duration,
                         mFileId = fileMp3Id,
-                        mMarkup = InlineKeyboardMarkup(
-                            listOf(
-                                InlineButton(
-                                    Strings().string(sVoiceListLabel, mUpdating),
-                                    mInlineMode = InlineModeQuery.CurrentChat()
-                                ),
-                                InlineButton(
-                                    Strings().string(sShareVoices, mUpdating),
-                                    mInlineMode = InlineModeQuery.OtherChat()
-                                )
-                            ).convertToVertical()
-                        ),
+                        mMarkup = VoiceKeyboard.invoke(mUpdating, id.toInt()),
                         mChatId = mUpdating.map(UserIdUpdating()),
                         mOnFileId = mOnFileId
                     )
                 }
             }
         } catch (e: AudioConvertingError) {
-            SendMessage(
-                mKey,
-                Strings.invoke().string(sConvertingErrorMessage, mUpdating),
-                InlineKeyboardMarkup(
-                    listOf(
-                        InlineButton(
-                            Strings.invoke().string(sConvertingErrorBtnLabel, mUpdating),
-                            "https://t.me/ShadowZilot"
-                        )
-                    ).convertToVertical()
-                )
-            )
+            ContactDevMessage(mKey, mUpdating)
         } catch (e: IllegalArgumentException) {
             throw FileDownloadException(voiceLink)
+        } catch (e: FileDownloadException) {
+            throw e
         } catch (e: Exception) {
             Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
             Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
-            Executable.Dummy()
+            ContactDevMessage(mKey, mUpdating)
         }
     }
 }

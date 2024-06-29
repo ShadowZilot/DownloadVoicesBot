@@ -7,6 +7,7 @@ import data.poll.PollStorage
 import data.premium.PremiumUserStorage
 import features.ads.AdsFeature
 import features.download_voice.DownloadVoiceFeature
+import features.editing_voices.EditingVoicesFeature
 import features.greeting.GreetingFunction
 import features.moderator.ModeratorFeature
 import features.poll.PollChains
@@ -15,6 +16,7 @@ import helpers.storage.jdbc_wrapping.DatabaseHelper
 
 lateinit var sBot: Bot
 var sBasePath = "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/"
+
 
 fun main(args: Array<String>) {
     sBasePath = if (args.isEmpty()) "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/" else args[0]
@@ -34,8 +36,10 @@ fun main(args: Array<String>) {
     provider.createdBot(
         VoiceListFeature(),
         GreetingFunction(),
+        VoiceListFeature(),
         AdsFeature(),
         DownloadVoiceFeature(),
+        EditingVoicesFeature(),
         PollChains(),
         ModeratorFeature()
     ) { bot ->

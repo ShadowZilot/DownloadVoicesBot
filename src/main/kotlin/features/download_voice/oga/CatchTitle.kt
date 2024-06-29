@@ -2,9 +2,9 @@ package features.download_voice.oga
 
 import chain.Chain
 import core.Updating
+import core.storage.Storages
 import data.VoiceStorage
-import domain.SuggestionMessage
-import domain.VoiceToMessage
+import domain.messages.VoiceToMessage
 import executables.Executable
 import executables.SendMessage
 import handlers.OnTextGotten
@@ -26,7 +26,7 @@ class CatchTitle : Chain(OnTextGotten()) {
             val voiceId = mStates.state(updating).int("waitForTitle").toLong()
             val newTitle = updating.map(UpdatingMessage())
             val isAudio = mStates.state(updating).boolean("isAudio")
-            if (newTitle.length <= 128) {
+            if (newTitle.length <= Storages.Main.Provider().stConfig.configValueLong("maxVoiceNameLen")) {
                 VoiceStorage.Base.Instance().updateVoiceTitle(voiceId, newTitle)
                 VoiceStorage.Base.Instance().updateVoiceDeletion(voiceId, false)
                 mStates.state(updating).editor(mStates).apply {

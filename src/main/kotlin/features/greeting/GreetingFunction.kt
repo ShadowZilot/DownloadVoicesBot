@@ -1,7 +1,6 @@
 package features.greeting
 
 import core.BotChains
-import features.greeting.chains.BroadcastTest
 import features.greeting.chains.StartCommand
 
 class GreetingFunction : BotChains {
