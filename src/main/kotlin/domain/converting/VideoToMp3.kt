@@ -16,8 +16,10 @@ class VideoToMp3(
         if (!inputFile.exists()) inputFile.createNewFile()
         inputFile.writeBytes(mInputBytes)
         val processBuilder = ProcessBuilder(
-            "ffmpeg", "-i", "$mId.mp4",
-            "-q:a", "0", "-map", "a", "$mId.mp3"
+            "ffmpeg",
+            "-i", "$mId.mp4",
+            "-map", "0:v:0", "-map", "0:a:0?",
+            "$mId.mp3"
         )
         val errorFile = File(sBasePath, "error-$mId.txt")
         if (!errorFile.exists()) errorFile.createNewFile()
