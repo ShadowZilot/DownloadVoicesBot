@@ -1,6 +1,7 @@
 package data.poll
 
 import data.Voice
+import data.VoiceStatus
 
 class VoiceLink : Voice.Mapper<String> {
     override fun map(
@@ -12,6 +13,6 @@ class VoiceLink : Voice.Mapper<String> {
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ) = voiceLink
 }

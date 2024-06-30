@@ -2,9 +2,11 @@ package api.voices
 
 import core.storage.Storages
 import data.VoiceNotFound
+import data.VoiceStatus
 import data.VoiceStorage
 import data.VoiceUserId
-import data.poll.VoiceLink
+import domain.converting.AudioConverter
+import exception_handlers.custom_exceptions.VoiceAccessForbiddenException
 import helper.handleQueryParam
 import helpers.FileDownload
 import helpers.FileUrl
@@ -20,9 +22,8 @@ import java.io.File
 fun Route.downloadVoice() {
     handle {
         val key = Storages.Main.Provider().stConfig.configValueString("botKey")
-        val userId = handleQueryParam(call.parameters["user_id"],
+        val userId = handleQueryParam("user_id",
             defaultParam = 0L,
-            context = this,
             nullAction = {
                 call.respond(HttpStatusCode.BadRequest, "User id query param doesn't found")
             }, converterFunction = { param ->
@@ -34,8 +35,7 @@ fun Route.downloadVoice() {
                 }
             })
         val voiceId = handleQueryParam(
-            call.parameters["voice_id"], defaultParam = -1L,
-            context = this,
+            "voice_id", defaultParam = -1L,
             nullAction = {
                 call.respond(HttpStatusCode.BadRequest, "Voice id query param doesn't found")
             },
@@ -49,19 +49,28 @@ fun Route.downloadVoice() {
             }
         )
         try {
-            var voice = VoiceStorage.Base.Instance().voiceById(voiceId)
+            val voice = VoiceStorage.Base.Instance().voiceByIdInAnyStatus(voiceId, VoiceStatus.DELETED)
             if (voice.map(VoiceUserId()) == userId) {
-                VoiceStorage.Base.Instance().updateDownloadLink(
-                    voiceId,
-                    FileUrl.Base(
-                        key, VoiceStorage.Base.Instance().voiceFileIdMp3(voiceId)
-                    ).fileUrl()
-                )
-                voice = VoiceStorage.Base.Instance().voiceById(voiceId)
+                val voiceMp3FileId = VoiceStorage.Base.Instance().voiceFileIdMp3(voiceId)
                 val voiceMp3File = File(sBasePath, "${voiceId}.mp3")
+                val audioBytes = if (voiceMp3FileId.isEmpty()) {
+                    val ogaFileId = VoiceStorage.Base.Instance().voiceFileId(voiceId)
+                    val ogaBytes = FileDownload.Base(
+                        FileUrl.Base(
+                            key, ogaFileId
+                        ).fileUrl()
+                    ).download()
+                    if (voiceMp3File.exists()) voiceMp3File.delete()
+                    AudioConverter.OgaToMp3Bytes(voiceId, ogaBytes).convertedBytes()
+                } else {
+                    val downloadLink = FileUrl.Base(
+                        key, voiceMp3FileId
+                    ).fileUrl()
+                    VoiceStorage.Base.Instance().updateDownloadLink(voiceId, downloadLink)
+                    FileDownload.Base(downloadLink).download()
+                }
                 if (!voiceMp3File.exists()) voiceMp3File.createNewFile()
-                val downloadLink = voice.map(VoiceLink())
-                voiceMp3File.writeBytes(FileDownload.Base(downloadLink).download())
+                voiceMp3File.writeBytes(audioBytes)
                 call.response.header(
                     HttpHeaders.ContentDisposition,
                     ContentDisposition.Attachment.withParameter(
@@ -73,7 +82,7 @@ fun Route.downloadVoice() {
                     Logging.ConsoleLog.log(this.status?.value.toString(), LogLevel.Info)
                 }
             } else {
-                call.respond(HttpStatusCode.Forbidden, "You don't have access to this voice")
+                throw VoiceAccessForbiddenException(userId, voiceId)
             }
         } catch (e: VoiceNotFound) {
             call.respond(HttpStatusCode.NotFound, "Voice not found")

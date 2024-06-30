@@ -2,6 +2,7 @@ package domain
 
 import core.Updating
 import data.Voice
+import data.VoiceStatus
 import helpers.FileUrl
 import updating.UserIdUpdating
 
@@ -23,7 +24,7 @@ class VoiceFromVideoNote(
             voiceLink,
             mDuration,
             System.currentTimeMillis(),
-            false
+            VoiceStatus.CREATING
         )
     }
 }

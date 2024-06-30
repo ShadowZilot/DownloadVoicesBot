@@ -3,6 +3,7 @@ package features.download_voice.mp3
 import chain.Chain
 import core.Updating
 import data.VoiceNotFound
+import data.VoiceStatus
 import data.VoiceStorage
 import domain.messages.VoiceToMessage
 import executables.AnswerToCallback
@@ -32,7 +33,7 @@ class LeaveAudioName : Chain(OnCallbackDataGotten("leftFileName")) {
                     )
                 )
             } catch (e: VoiceNotFound) {
-                VoiceStorage.Base.Instance().updateVoiceDeletion(voiceId, false)
+                VoiceStorage.Base.Instance().updateVoiceDeletion(voiceId, VoiceStatus.NORMAL)
                 mStates.state(updating).editor(mStates).apply {
                     deleteValue("waitForTitle")
                     deleteValue("isAudio")

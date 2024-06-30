@@ -11,13 +11,15 @@ interface VoiceStorage : StorageShell {
 
     fun updateVoiceTitle(id: Long, title: String)
 
-    fun updateVoiceDeletion(id: Long, isDeleted: Boolean)
+    fun updateVoiceDeletion(id: Long, voiceStatus: VoiceStatus)
 
     fun updateVoiceName(id: Long, name: String)
 
     fun updateDownloadLink(id: Long, voiceLink: String)
 
-    fun voiceById(id: Long): Voice
+    fun voiceById(id: Long, withStatus: VoiceStatus = VoiceStatus.NORMAL): Voice
+
+    fun voiceByIdInAnyStatus(id: Long, exceptionStatus: VoiceStatus): Voice
 
     fun deleteVoice(id: Long)
 
@@ -57,10 +59,10 @@ interface VoiceStorage : StorageShell {
             )
         }
 
-        override fun updateVoiceDeletion(id: Long, isDeleted: Boolean) {
+        override fun updateVoiceDeletion(id: Long, voiceStatus: VoiceStatus) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `is_deleted` = ? WHERE `id` = ?",
-                isDeleted, id
+                "UPDATE $mTableName SET `voice_status` = ? WHERE `id` = ?",
+                voiceStatus.statusCode, id
             )
         }
 
@@ -78,10 +80,10 @@ interface VoiceStorage : StorageShell {
             )
         }
 
-        override fun voiceById(id: Long): Voice {
+        override fun voiceById(id: Long, withStatus: VoiceStatus): Voice {
             var voice: Voice? = null
             mDatabase.executeQuery(
-                "SELECT * FROM $mTableName WHERE `id` = ? AND `is_deleted` = ?",
+                "SELECT * FROM $mTableName WHERE `id` = ? AND `voice_status` = ?",
                 { item, _ ->
                     voice = try {
                         Voice(item)
@@ -89,7 +91,23 @@ interface VoiceStorage : StorageShell {
                         null
                     }
                 },
-                id, false
+                id, withStatus.statusCode
+            )
+            return voice ?: throw VoiceNotFound(id)
+        }
+
+        override fun voiceByIdInAnyStatus(id: Long, exceptionStatus: VoiceStatus): Voice {
+            var voice: Voice? = null
+            mDatabase.executeQuery(
+                "SELECT * FROM $mTableName WHERE `id` = ? AND `voice_status` != ?",
+                { item, _ ->
+                    voice = try {
+                        Voice(item)
+                    } catch (e: SQLException) {
+                        null
+                    }
+                },
+                id, exceptionStatus.statusCode
             )
             return voice ?: throw VoiceNotFound(id)
         }
@@ -97,7 +115,8 @@ interface VoiceStorage : StorageShell {
         override fun voiceFileIdMp3(id: Long): String {
             var voiceFileId: String? = null
             mDatabase.executeQuery(
-                "SELECT file_mp3_id FROM $mTableName WHERE `id` = ? AND `is_deleted` = ?",
+                "SELECT file_mp3_id FROM $mTableName WHERE `id` = ?" +
+                        " AND (`voice_status` = ? OR `voice_status` = ?)",
                 { item, _ ->
                     voiceFileId = try {
                         item.getString("file_mp3_id")
@@ -105,20 +124,22 @@ interface VoiceStorage : StorageShell {
                         null
                     }
                 },
-                id, false
+                id, VoiceStatus.NORMAL.statusCode, VoiceStatus.CREATING.statusCode
             )
             return voiceFileId ?: throw VoiceNotFound(id)
         }
 
         override fun deleteVoice(id: Long) {
             mDatabase.executeQueryWithoutResult(
-                "UPDATE $mTableName SET `is_deleted` = 1 WHERE `id` = ?", id)
+                "UPDATE $mTableName SET `voice_status` = ? WHERE `id` = ?", id, VoiceStatus.DELETED.statusCode
+            )
         }
 
         override fun voiceFileId(id: Long): String {
             var voiceFileId: String? = null
             mDatabase.executeQuery(
-                "SELECT file_oga_id FROM $mTableName WHERE `id` = ? AND `is_deleted` = ?",
+                "SELECT file_oga_id FROM $mTableName WHERE `id` = ? " +
+                        "AND (`voice_status` = ? OR `voice_status` = ?)",
                 { item, _ ->
                     voiceFileId = try {
                         item.getString("file_oga_id")
@@ -126,7 +147,7 @@ interface VoiceStorage : StorageShell {
                         null
                     }
                 },
-                id, false
+                id, VoiceStatus.NORMAL.statusCode, VoiceStatus.CREATING.statusCode
             )
             return voiceFileId ?: throw VoiceNotFound(id)
         }
@@ -196,16 +217,16 @@ interface VoiceStorage : StorageShell {
             if (search.isNotEmpty()) {
                 mDatabase.executeQuery(
                     "SELECT * FROM $mTableName WHERE `user_id` = ? AND" +
-                            " `is_deleted` = ? AND INSTR(`title`, ?) > 0 ORDER BY `saved_time` DESC LIMIT 50 OFFSET ?",
+                            " `voice_status` = ? AND INSTR(`title`, ?) > 0 ORDER BY `saved_time` DESC LIMIT 50 OFFSET ?",
                     handlingAction,
-                    userId, false, search, offset
+                    userId, VoiceStatus.NORMAL.statusCode, search, offset
                 )
             } else {
                 mDatabase.executeQuery(
                     "SELECT * FROM $mTableName WHERE `user_id` = ? AND" +
-                            " `is_deleted` = ? ORDER BY `saved_time` DESC LIMIT 50 OFFSET ?",
+                            " `voice_status` = ? ORDER BY `saved_time` DESC LIMIT 50 OFFSET ?",
                     handlingAction,
-                    userId, false, offset
+                    userId, VoiceStatus.NORMAL.statusCode, offset
                 )
             }
             return voices
@@ -265,7 +286,7 @@ interface VoiceStorage : StorageShell {
                 "voice_link varchar(256)," +
                 "duration int," +
                 "saved_time bigint," +
-                "is_deleted bool" +
+                "voice_status int" +
                 ");"
 
         object Instance {

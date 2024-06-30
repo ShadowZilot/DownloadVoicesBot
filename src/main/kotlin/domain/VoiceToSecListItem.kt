@@ -3,9 +3,9 @@ package domain
 import core.Updating
 import core.storage.Storages
 import data.Voice
+import data.VoiceStatus
 import inline_query_result.InlineQueryResultArticle
 import inline_query_result.content.InputTextContent
-import logs.Logging
 import sEmptyTitle
 import translations.domain.ContextString
 
@@ -23,7 +23,7 @@ class VoiceToSecListItem(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): InlineQueryResultArticle {
         val minutes = duration / 60
         val seconds = if (duration - (minutes * 60) < 10) {

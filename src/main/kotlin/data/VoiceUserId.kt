@@ -10,6 +10,6 @@ class VoiceUserId : Voice.Mapper<Long> {
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ) = userId
 }

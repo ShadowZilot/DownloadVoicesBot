@@ -1,10 +1,12 @@
 import api.voices.VoicesRoutes
 import core.Bot
 import core.BotProvider
+import core.ExceptionHandlers
 import core.storage.Storages
 import data.VoiceStorage
 import data.poll.PollStorage
 import data.premium.PremiumUserStorage
+import exception_handlers.*
 import features.ads.AdsFeature
 import features.download_voice.DownloadVoiceFeature
 import features.editing_voices.EditingVoicesFeature
@@ -22,6 +24,14 @@ fun main(args: Array<String>) {
     sBasePath = if (args.isEmpty()) "/Users/egorponomarev/IdeaProjects/DownloadVoicesBot/" else args[0]
     val provider = BotProvider.Base(
         args,
+        ExceptionHandlers(
+            VoiceIdInvalidHandler(),
+            UserIdInvalidHandler(),
+            VoiceIdNotFoundExceptionHandler(),
+            UserIdNotFoundExceptionHandler(),
+            CommonExceptionHandler(),
+            VoiceAccessForbiddenHandler(),
+        ),
         VoicesRoutes()
     )
     val db = DatabaseHelper.Base.Instance.provideInstance(
@@ -36,7 +46,6 @@ fun main(args: Array<String>) {
     provider.createdBot(
         VoiceListFeature(),
         GreetingFunction(),
-        VoiceListFeature(),
         AdsFeature(),
         DownloadVoiceFeature(),
         EditingVoicesFeature(),

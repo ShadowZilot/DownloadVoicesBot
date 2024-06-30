@@ -7,7 +7,6 @@ import domain.VoiceFactory
 import executables.Executable
 import executables.SendMessage
 import handlers.OnVoiceGotten
-import helper.UpdatingIsUserPremium
 import helper.VoiceEditingButton
 import helpers.convertToVertical
 import keyboard_markup.InlineButton
@@ -34,11 +33,9 @@ class CatchVoice : Chain(OnVoiceGotten()) {
                 Strings().string(sTitleSuggestion, updating),
                 InlineKeyboardMarkup(
                     mutableListOf<KeyboardButton>().apply {
-                        if (updating.map(UpdatingIsUserPremium())) {
-                            add(
-                                VoiceEditingButton.Base(lastVoiceId, updating).button()
-                            )
-                        }
+                        add(
+                            VoiceEditingButton.Base(lastVoiceId, updating).button()
+                        )
                         add(
                             InlineButton(
                                 Strings().string(sSkipTitleLabel, updating),

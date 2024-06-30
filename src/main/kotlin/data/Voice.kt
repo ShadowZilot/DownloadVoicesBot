@@ -13,7 +13,7 @@ data class Voice(
     private val mVoiceLink: String,
     private val mDuration: Int,
     private val mSavedTime: Long,
-    private val mIsDeleted: Boolean
+    private val mVoiceStatus: VoiceStatus
 ) : Record() {
     constructor(item: ResultSet) : this(
         item.getLong("id"),
@@ -24,7 +24,12 @@ data class Voice(
         item.getString("voice_link"),
         item.getInt("duration"),
         item.getLong("saved_time"),
-        item.getBoolean("is_deleted")
+        when (item.getInt("voice_status")) {
+            VoiceStatus.NORMAL.statusCode -> VoiceStatus.NORMAL
+            VoiceStatus.DELETED.statusCode -> VoiceStatus.DELETED
+            VoiceStatus.CREATING.statusCode -> VoiceStatus.CREATING
+            else -> throw IllegalStateException("Unknown voice status = ${item.getInt("is_deleted")}")
+        }
     )
 
     fun <T> map(mapper: Mapper<T>) = mapper.map(
@@ -36,7 +41,7 @@ data class Voice(
         mVoiceLink,
         mDuration,
         mSavedTime,
-        mIsDeleted
+        mVoiceStatus
     )
 
     interface Mapper<T> {
@@ -50,7 +55,7 @@ data class Voice(
             voiceLink: String,
             duration: Int,
             savedTime: Long,
-            isDeleted: Boolean
+            voiceStatus: VoiceStatus
         ): T
     }
 
@@ -62,10 +67,10 @@ data class Voice(
     override fun insertSQLQuery(tableName: String) = PackedStatementImpl(
         "INSERT INTO $tableName (`file_oga_id`, `file_mp3_id`," +
                 " `user_id`," +
-                " `title`, `voice_link`, `duration`, `saved_time`, `is_deleted`) VALUES(?, ?" +
+                " `title`, `voice_link`, `duration`, `saved_time`, `voice_status`) VALUES(?, ?" +
                 ", ?, ?," +
                 " ?, ?, ?, ?)",
-        mFileOgaId, mFileMp3Id, mUserId, mTitle, mVoiceLink, mDuration, mSavedTime, mIsDeleted
+        mFileOgaId, mFileMp3Id, mUserId, mTitle, mVoiceLink, mDuration, mSavedTime, mVoiceStatus.statusCode
     )
 
     override fun updateSQLQuery(tableName: String) = PackedStatementImpl(

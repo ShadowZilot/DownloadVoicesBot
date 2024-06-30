@@ -3,6 +3,7 @@ package domain.messages
 import core.Updating
 import core.storage.Storages
 import data.Voice
+import data.VoiceStatus
 import domain.converting.AudioConverter
 import domain.converting.AudioConvertingError
 import domain.converting.SendAudioCustom
@@ -40,7 +41,7 @@ class VoiceToMessage(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): Executable {
         return try {
             if (mIsJustSaved) {

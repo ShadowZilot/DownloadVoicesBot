@@ -3,10 +3,10 @@ package domain.messages
 import core.Updating
 import core.storage.Storages
 import data.Voice
+import data.VoiceStatus
 import executables.EditCaptionMessage
 import executables.Executable
 import helpers.ToMarkdownSupported
-import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
@@ -31,7 +31,7 @@ class EditVoiceCaptionToNormal(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): Executable {
         return EditCaptionMessage(
             mKey,

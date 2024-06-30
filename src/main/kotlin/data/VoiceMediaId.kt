@@ -13,7 +13,7 @@ class VoiceMediaId : Voice.Mapper<VoiceMediaPair> {
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): VoiceMediaPair {
         return if (fileOgaId.isEmpty()) {
             Pair(fileMp3Id, "mp3")

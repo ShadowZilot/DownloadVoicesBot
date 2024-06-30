@@ -4,6 +4,7 @@ import core.Updating
 import core.storage.Storages
 import data.Voice
 import data.VoiceMediaPair
+import data.VoiceStatus
 import domain.converting.AudioConverter
 import domain.converting.SendAudioCustom
 import executables.Executable
@@ -29,7 +30,7 @@ class NewNameVoiceMessage(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): Executable {
         val (mediaId, mediaType) = mMediaPair
         val mediaBytes = FileDownload.Base(FileUrl.Base(mKey, mediaId).fileUrl()).download()

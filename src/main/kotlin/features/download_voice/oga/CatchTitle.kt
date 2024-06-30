@@ -3,6 +3,7 @@ package features.download_voice.oga
 import chain.Chain
 import core.Updating
 import core.storage.Storages
+import data.VoiceStatus
 import data.VoiceStorage
 import domain.messages.VoiceToMessage
 import executables.Executable
@@ -28,7 +29,7 @@ class CatchTitle : Chain(OnTextGotten()) {
             val isAudio = mStates.state(updating).boolean("isAudio")
             if (newTitle.length <= Storages.Main.Provider().stConfig.configValueLong("maxVoiceNameLen")) {
                 VoiceStorage.Base.Instance().updateVoiceTitle(voiceId, newTitle)
-                VoiceStorage.Base.Instance().updateVoiceDeletion(voiceId, false)
+                VoiceStorage.Base.Instance().updateVoiceDeletion(voiceId, VoiceStatus.NORMAL)
                 mStates.state(updating).editor(mStates).apply {
                     deleteValue("waitForTitle")
                     deleteValue("isAudio")

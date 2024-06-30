@@ -5,6 +5,7 @@ import audio_info.UpdatingAudioFileId
 import audio_info.UpdatingAudioTitle
 import core.Updating
 import data.Voice
+import data.VoiceStatus
 import helpers.FileUrl
 import updating.UpdatingVoiceDuration
 import updating.UpdatingVoiceFileId
@@ -32,7 +33,7 @@ interface VoiceFactory {
                 voiceLink,
                 if (mIsAudio) updating.map(UpdatingAudioDuration()) else updating.map(UpdatingVoiceDuration()),
                 System.currentTimeMillis(),
-                true
+                VoiceStatus.CREATING
             )
         }
     }

@@ -9,6 +9,7 @@ class VoicesRoutes : RoutesFeature {
 
     override fun routes() = listOf(
         RouteWrapper("/voices", HttpMethod.Get, Route::allVoices),
-        RouteWrapper("/download", HttpMethod.Get, Route::downloadVoice)
+        RouteWrapper("/download", HttpMethod.Get, Route::downloadVoice),
+        RouteWrapper("/current_voice", HttpMethod.Get, Route::currentVoice)
     )
 }

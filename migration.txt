@@ -1,0 +1,4 @@
+is_deleted field migration
+
+ALTER TABLE voices MODIFY COLUMN is_deleted int;
+ALTER TABLE voices RENAME COLUMN is_deleted TO voice_status;

@@ -2,6 +2,7 @@ package domain
 
 import core.Updating
 import data.Voice
+import data.VoiceStatus
 import sDownloadVoiceLink
 import sEmptyTitle
 import translations.domain.ContextString.Base.Strings
@@ -20,7 +21,7 @@ class VoiceToItemOtherChat(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): InlineQueryResultCachedAudio {
         return InlineQueryResultCachedAudio(
             id.toInt(),

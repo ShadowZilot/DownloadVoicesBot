@@ -12,7 +12,7 @@ class VoiceToJsonResponse : Voice.Mapper<JSONObject> {
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ) = JSONObject().apply {
         put("id", id)
         put("title", title)

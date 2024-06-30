@@ -2,9 +2,9 @@ package domain.messages
 
 import core.Updating
 import data.Voice
+import data.VoiceStatus
 import executables.EditCaptionMessage
 import executables.Executable
-import executables.SendMessage
 import helpers.convertToVertical
 import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
@@ -26,7 +26,7 @@ class VoiceTooLongNewNameMessage(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): Executable {
         return EditCaptionMessage(
             mKey,

@@ -3,6 +3,7 @@ package domain
 import core.Updating
 import core.storage.Storages
 import data.Voice
+import data.VoiceStatus
 import executables.Executable
 import executables.SendAudio
 import helpers.FileDownload
@@ -16,7 +17,7 @@ import sEmptyTitle
 import translations.domain.ContextString
 import updating.UserIdUpdating
 import users.User
-import java.util.Date
+import java.util.*
 
 class SecretVoiceMessage(
     private val mKey: String,
@@ -32,7 +33,7 @@ class SecretVoiceMessage(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): Executable {
         return runBlocking {
             SendAudio(

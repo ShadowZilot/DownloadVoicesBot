@@ -2,6 +2,7 @@ package domain.messages
 
 import core.Updating
 import data.Voice
+import data.VoiceStatus
 import executables.EditCaptionMessage
 import executables.Executable
 import helpers.convertToVertical
@@ -26,7 +27,7 @@ class VoiceSubmitDeletionMessage(
         voiceLink: String,
         duration: Int,
         savedTime: Long,
-        isDeleted: Boolean
+        voiceStatus: VoiceStatus
     ): Executable {
         return EditCaptionMessage(
             mKey,
