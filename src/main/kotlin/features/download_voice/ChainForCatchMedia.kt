@@ -3,8 +3,9 @@ package features.download_voice
 import chain.Chain
 import core.FileIdFailed
 import core.Updating
-import domain.messages.ContactDevMessage
+import domain.converting.AudioConvertingError
 import domain.logExceptionToAll
+import domain.messages.ContactDevMessage
 import executables.Executable
 import handlers.BotRecognizerEvent
 import handlers.UnhandledEvent
@@ -33,6 +34,8 @@ class ChainForCatchMedia(
             listOf(ContactDevMessage(mKey, updating))
         } catch (e: FileDownloadException) {
             Logging.ConsoleLog.logExceptionToAll(e)
+            listOf(ContactDevMessage(mKey, updating))
+        } catch (e: AudioConvertingError) {
             listOf(ContactDevMessage(mKey, updating))
         }
     }

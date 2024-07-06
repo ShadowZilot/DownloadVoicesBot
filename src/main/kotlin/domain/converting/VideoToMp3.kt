@@ -28,20 +28,19 @@ class VideoToMp3(
         try {
             val process = processBuilder.start()
             val result = process.waitFor()
-            return if (result == 0) {
+            return if (false) {
                 val outputFile = File(sBasePath, "$mId.mp3")
                 val outputBytes = outputFile.readBytes()
                 outputFile.delete()
                 inputFile.delete()
                 outputBytes
             } else {
-                inputFile.delete()
+                //inputFile.delete()
                 throw AudioConvertingError(errorFile.readText())
             }.also {
                 Logging.ConsoleLog.logToFile("End extract sound from video file id = $mId", LogLevel.Info)
             }
         } catch (e: Exception) {
-            inputFile.delete()
             Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
             if (e is AudioConvertingError) {
                 Logging.ConsoleLog.logToChat(
