@@ -18,25 +18,21 @@ class VideoToMp3(
         val processBuilder = ProcessBuilder(
             "ffmpeg",
             "-i", "$mId.mp4",
-            "-map", "0:v:0", "-map", "0:a:0?",
+            "-vn", "-acodec", "libmp3lame", "-ab", "128k",
             "$mId.mp3"
         )
         val errorFile = File(sBasePath, "error-$mId.txt")
+        val outputFile = File(sBasePath, "$mId.mp3")
         if (!errorFile.exists()) errorFile.createNewFile()
         processBuilder.directory(File(sBasePath))
         processBuilder.redirectError(errorFile)
         try {
             val process = processBuilder.start()
             val result = process.waitFor()
-            return if (false) {
-                val outputFile = File(sBasePath, "$mId.mp3")
-                val outputBytes = outputFile.readBytes()
-                outputFile.delete()
-                inputFile.delete()
-                outputBytes
-            } else {
-                //inputFile.delete()
-                throw AudioConvertingError(errorFile.readText())
+            return when (result) {
+                0 -> outputFile.readBytes()
+                234 -> throw NoAudioInMp4()
+                else -> throw AudioConvertingError(errorFile.readText())
             }.also {
                 Logging.ConsoleLog.logToFile("End extract sound from video file id = $mId", LogLevel.Info)
             }
@@ -50,8 +46,10 @@ class VideoToMp3(
             } else {
                 Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
             }
-            throw AudioConvertingError(e.message)
+            throw e
         } finally {
+            outputFile.delete()
+            inputFile.delete()
             errorFile.delete()
         }
     }
