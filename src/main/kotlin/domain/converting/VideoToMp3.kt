@@ -29,12 +29,15 @@ class VideoToMp3(
         try {
             val process = processBuilder.start()
             val result = process.waitFor()
-            return when (result) {
-                0 -> outputFile.readBytes()
-                234 -> throw NoAudioInMp4()
-                else -> throw AudioConvertingError(errorFile.readText())
-            }.also {
-                Logging.ConsoleLog.logToFile("End extract sound from video file id = $mId", LogLevel.Info)
+            return if (result == 0) {
+                outputFile.readBytes()
+            } else {
+                val errorText = errorFile.readText()
+                if (errorText.contains("Output file does not contain any stream")) {
+                    throw NoAudioInMp4()
+                } else {
+                    throw AudioConvertingError(errorText)
+                }
             }
         } catch (e: Exception) {
             Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
