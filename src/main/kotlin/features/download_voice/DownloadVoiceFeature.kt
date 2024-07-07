@@ -20,8 +20,8 @@ class DownloadVoiceFeature : BotChains {
         CancelSaving(),
         ChainForCatchMedia(CatchAudio()),
         LeaveAudioName(),
-        CatchVideoNote(),
-        CatchVideoName(),
-        SkipVideoName()
+        ChainForCatchMedia(CatchVideoNote()),
+        ChainForCatchMedia(CatchVideoName()),
+        ChainForCatchMedia(SkipVideoName())
     )
 }

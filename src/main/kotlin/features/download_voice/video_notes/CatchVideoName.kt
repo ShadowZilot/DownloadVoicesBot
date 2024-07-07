@@ -3,14 +3,10 @@ package features.download_voice.video_notes
 import chain.Chain
 import core.Updating
 import core.storage.Storages
-import data.Voice
 import data.VoiceStorage
-import domain.SuggestionMessage
 import domain.VoiceFromVideoNote
-import domain.converting.AudioConverter
-import domain.converting.SendAudioCustom
-import domain.converting.VideoToMp3
-import executables.DeleteMessage
+import domain.converting.*
+import domain.messages.ContactDevMessage
 import executables.Executable
 import executables.SendMessage
 import handlers.OnTextGotten
@@ -21,6 +17,7 @@ import keyboard_markup.InlineButton
 import keyboard_markup.InlineKeyboardMarkup
 import keyboard_markup.InlineModeQuery
 import sCancelLabel
+import sNoAudioError
 import sShareVoices
 import sSkipTitleLabel
 import sTooLongName
@@ -34,6 +31,13 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 class CatchVideoName : Chain(OnTextGotten()) {
+
+    private val deleteVideoVars: (updating: Updating) -> Unit = { updating ->
+        mStates.state(updating).editor(mStates).apply {
+            deleteValue("videoDuration")
+            deleteValue("videoNoteId")
+        }.commit()
+    }
 
     override suspend fun executableChain(updating: Updating): List<Executable> {
         val videoNoteId = mStates.state(updating).safetyString("videoNoteId")
@@ -49,44 +53,54 @@ class CatchVideoName : Chain(OnTextGotten()) {
                     videoName
                 ).createVoiceEntity(updating)
                 VoiceStorage.Base.Instance().insertVoice(voice)
-                mStates.state(updating).editor(mStates).apply {
-                    deleteValue("videoDuration")
-                    deleteValue("videoNoteId")
-                }.commit()
+                deleteVideoVars(updating)
             }
             if (videoName.length <= Storages.Main.Provider().stConfig.configValueLong("maxVoiceNameLen")) {
-                listOf(
-                    SendAudioCustom(
-                        mKey,
-                        videoName,
-                        "opus",
-                        ContextString.Base.Strings().string(sVoiceSaved, updating),
-                        videoNoteDuration,
-                        AudioConverter.Mp3ToOgaBytes(
-                            randomId.toLong(),
-                            VideoToMp3(
-                                randomId.toString(),
-                                FileDownload.Base(
-                                    FileUrl.Base(mKey, videoNoteId).fileUrl()
-                                ).download()
-                            ).convertedBytes()
-                        ).convertedBytes(),
-                        mMarkup = InlineKeyboardMarkup(
-                            listOf(
-                                InlineButton(
-                                    ContextString.Base.Strings().string(sVoiceListLabel, updating),
-                                    mInlineMode = InlineModeQuery.CurrentChat()
-                                ),
-                                InlineButton(
-                                    ContextString.Base.Strings().string(sShareVoices, updating),
-                                    mInlineMode = InlineModeQuery.OtherChat()
-                                )
-                            ).convertToVertical()
-                        ),
-                        mChatId = updating.map(UserIdUpdating()),
-                        mOnFileId = onFileIdGotten
+                try {
+                    listOf(
+                        SendAudioCustom(
+                            mKey,
+                            videoName,
+                            "opus",
+                            ContextString.Base.Strings().string(sVoiceSaved, updating),
+                            videoNoteDuration,
+                            AudioConverter.Mp3ToOgaBytes(
+                                randomId.toLong(),
+                                VideoToMp3(
+                                    randomId.toString(),
+                                    FileDownload.Base(
+                                        FileUrl.Base(mKey, videoNoteId).fileUrl()
+                                    ).download()
+                                ).convertedBytes()
+                            ).convertedBytes(),
+                            mMarkup = InlineKeyboardMarkup(
+                                listOf(
+                                    InlineButton(
+                                        ContextString.Base.Strings().string(sVoiceListLabel, updating),
+                                        mInlineMode = InlineModeQuery.CurrentChat()
+                                    ),
+                                    InlineButton(
+                                        ContextString.Base.Strings().string(sShareVoices, updating),
+                                        mInlineMode = InlineModeQuery.OtherChat()
+                                    )
+                                ).convertToVertical()
+                            ),
+                            mChatId = updating.map(UserIdUpdating()),
+                            mOnFileId = onFileIdGotten
+                        )
                     )
-                )
+                } catch (e: AudioConvertingError) {
+                    deleteVideoVars(updating)
+                    listOf(ContactDevMessage(mKey, updating))
+                } catch (e: NoAudioInMp4) {
+                    deleteVideoVars(updating)
+                    listOf(
+                        SendMessage(
+                            mKey,
+                            ContextString.Base.Strings().string(sNoAudioError, updating)
+                        )
+                    )
+                }
             } else {
                 listOf(
                     SendMessage(

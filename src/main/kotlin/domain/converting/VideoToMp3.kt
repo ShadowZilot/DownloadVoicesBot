@@ -16,10 +16,13 @@ class VideoToMp3(
         if (!inputFile.exists()) inputFile.createNewFile()
         inputFile.writeBytes(mInputBytes)
         val processBuilder = ProcessBuilder(
-            "ffmpeg", "-i", "$mId.mp4",
-            "-q:a", "0", "-map", "a", "$mId.mp3"
+            "ffmpeg",
+            "-i", "$mId.mp4",
+            "-vn", "-acodec", "libmp3lame", "-ab", "128k",
+            "$mId.mp3"
         )
         val errorFile = File(sBasePath, "error-$mId.txt")
+        val outputFile = File(sBasePath, "$mId.mp3")
         if (!errorFile.exists()) errorFile.createNewFile()
         processBuilder.directory(File(sBasePath))
         processBuilder.redirectError(errorFile)
@@ -27,19 +30,16 @@ class VideoToMp3(
             val process = processBuilder.start()
             val result = process.waitFor()
             return if (result == 0) {
-                val outputFile = File(sBasePath, "$mId.mp3")
-                val outputBytes = outputFile.readBytes()
-                outputFile.delete()
-                inputFile.delete()
-                outputBytes
+                outputFile.readBytes()
             } else {
-                inputFile.delete()
-                throw AudioConvertingError(errorFile.readText())
-            }.also {
-                Logging.ConsoleLog.logToFile("End extract sound from video file id = $mId", LogLevel.Info)
+                val errorText = errorFile.readText()
+                if (errorText.contains("Output file does not contain any stream")) {
+                    throw NoAudioInMp4()
+                } else {
+                    throw AudioConvertingError(errorText)
+                }
             }
         } catch (e: Exception) {
-            inputFile.delete()
             Logging.ConsoleLog.logToFile(e.message ?: "", LogLevel.Exception)
             if (e is AudioConvertingError) {
                 Logging.ConsoleLog.logToChat(
@@ -49,8 +49,10 @@ class VideoToMp3(
             } else {
                 Logging.ConsoleLog.logToChat(e.message ?: "", LogLevel.Exception)
             }
-            throw AudioConvertingError(e.message)
+            throw e
         } finally {
+            outputFile.delete()
+            inputFile.delete()
             errorFile.delete()
         }
     }
