@@ -5,7 +5,6 @@ import core.ExceptionHandlers
 import core.storage.Storages
 import data.VoiceStorage
 import data.poll.PollStorage
-import data.premium.PremiumUserStorage
 import exception_handlers.*
 import features.ads.AdsFeature
 import features.download_voice.DownloadVoiceFeature
@@ -41,8 +40,8 @@ fun main(args: Array<String>) {
     db.createTable(VoiceStorage.Base.Instance().tableSchema())
     PollStorage.Base.Instance.create("polls", db)
     db.createTable(PollStorage.Base.Instance().tableSchema())
-    PremiumUserStorage.Base.Instance.create("premiums", db)
-    db.createTable(PremiumUserStorage.Base.Instance().tableSchema())
+//    PremiumUserStorage.Base.Instance.create("premiums", db)
+//    db.createTable(PremiumUserStorage.Base.Instance().tableSchema())
     provider.createdBot(
         VoiceListFeature(),
         GreetingFunction(),
