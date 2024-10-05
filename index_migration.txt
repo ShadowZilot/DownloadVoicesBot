@@ -1,0 +1,10 @@
+Добавление индексов
+
+ALTER TABLE voices ADD INDEX user_id_index (user_id, is_deleted)
+ALTER TABLE voices MODIFY COLUMN title text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL;
+ALTER TABLE voices ADD FULLTEXT voice_name_index (title);
+
+Откат индексов
+
+DROP INDEX user_id_index ON voices
+DROP INDEX voice_name_index ON voices
